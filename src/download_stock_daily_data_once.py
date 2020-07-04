@@ -50,7 +50,7 @@ def history_stock_daily(ts_code='', adjust="", trade_date=''):
             is_retry_times = 0
         except Exception as e:
             print("error is_retry_times", is_retry_times, ts_code, adjust, trade_date)
-            is_retry_times += 1
+            is_retry_times -= 1
 
     sql = """
     insert into akshare_daily (
@@ -195,15 +195,9 @@ def dowload_stock_daily(start_date, hashmod, value):
         start_time = time.time()
         download_cnt += 1
         for adjust in adjust_list:
-            is_retry = True
-            while (is_retry):
-                try:
-                    is_retry = history_stock_daily(ts_code, adjust, start_date)
-                except Exception as e:
-                    print(e)
-                    is_retry = True
-                    time.sleep(1)
-        print("dowload_stock_daily ts_code cost ", time.time() - start_time, ts_code, adjust, 'download cnt ',download_cnt)
+            is_retry = history_stock_daily(ts_code, adjust, start_date)
+        print("dowload_stock_daily ts_code cost ", time.time() - start_time, ts_code, adjust, 'download cnt ',
+              download_cnt)
 
 
 if __name__ == '__main__':
@@ -212,12 +206,15 @@ if __name__ == '__main__':
     print("目标翻一倍")
     print('参数个数为:', len(sys.argv), '个参数。')
     print('参数列表:', str(sys.argv))
-    #print(time.strftime("%Y%m%d", time.localtime()))
-    #today = datetime.datetime.now()
-    #start_date = (today + datetime.timedelta(-2)).strftime("%Y%m%d")
-    print("mod:", sys.argv[1], " value", sys.argv[2], " start date", sys.argv[3])
+    # print(time.strftime("%Y%m%d", time.localtime()))
+    # today = datetime.datetime.now()
+    # start_date = (today + datetime.timedelta(-2)).strftime("%Y%m%d")
     hashmod = sys.argv[1]
     value = sys.argv[2]
     start_date = sys.argv[3]
+    # hashmod = 1
+    # value = 0
+    # start_date = '20200618'
+    print("mod:", hashmod, " value", value, " start date", start_date)
     dowload_stock_daily(start_date, hashmod, value)
-    print("Total cost:", time.time() - start_time)
+    # print("Total cost:", time.time() - start_time)
