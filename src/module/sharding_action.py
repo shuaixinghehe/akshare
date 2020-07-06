@@ -101,6 +101,7 @@ def create_shareding_table(ts_code='default'):
         `kind` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL
         )   ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
         """
+
         ak_cur.execute(sql, ())
         ak_conn.commit()
 
@@ -155,3 +156,4 @@ if __name__ == '__main__':
     #     """
     # sql = sql.format(1, 2, 3, 4, 5, 6, 7, 8)
     # print(sql)
+    # sharding_action_table()
