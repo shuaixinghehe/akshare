@@ -1,10 +1,9 @@
-python	download_realtime_action_data_once.py	10	0	>>	./log.download_realtime_action_data_once.3.0	&
-python	download_realtime_action_data_once.py	10	1	>>	./log.download_realtime_action_data_once.3.1	&
-python	download_realtime_action_data_once.py	10	2	>>	./log.download_realtime_action_data_once.3.2	&
-python	download_realtime_action_data_once.py	10	3	>>	./log.download_realtime_action_data_once.3.3	&
-python	download_realtime_action_data_once.py	10	4	>>	./log.download_realtime_action_data_once.3.4	&
-python	download_realtime_action_data_once.py	10	5	>>	./log.download_realtime_action_data_once.3.5	&
-python	download_realtime_action_data_once.py	10	6	>>	./log.download_realtime_action_data_once.3.6	&
-python	download_realtime_action_data_once.py	10	7	>>	./log.download_realtime_action_data_once.3.7	&
-python	download_realtime_action_data_once.py	10	8	>>	./log.download_realtime_action_data_once.3.8	&
-python	download_realtime_action_data_once.py	10	9	>>	./log.download_realtime_action_data_once.3.9	&
+python	download_realtime_action_data_once.py	1	0   20200619	>>	./log.download_realtime_action_data_once.20200619	&
+python	download_realtime_action_data_once.py	1	0   20200622	>>	./log.download_realtime_action_data_once.20200622	&
+python	download_realtime_action_data_once.py	1	0   20200623	>>	./log.download_realtime_action_data_once.20200623	&
+python	download_realtime_action_data_once.py	1	0   20200624	>>	./log.download_realtime_action_data_once.20200624	&
+python	download_realtime_action_data_once.py	1	0   20200629	>>	./log.download_realtime_action_data_once.20200629	&
+python	download_realtime_action_data_once.py	1	0   20200630	>>	./log.download_realtime_action_data_once.20200630	&
+python	download_realtime_action_data_once.py	1	0   20200701	>>	./log.download_realtime_action_data_once.20200701	&
+python	download_realtime_action_data_once.py	1	0   20200702	>>	./log.download_realtime_action_data_once.20200702	&
+python	download_realtime_action_data_once.py	1	0   20200703	>>	./log.download_realtime_action_data_once.20200703	&

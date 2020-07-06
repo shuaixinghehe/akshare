@@ -72,6 +72,7 @@ def realtime_stock_detail(ts_code, trade_date):
     ak_code = ts_code_2_ak_code(ts_code)
     is_retry_times = 5
     stock_zh_a_tick_tx_df = None
+    start_time = time.time()
     while is_retry_times > 0:
         try:
             stock_zh_a_tick_tx_df = stock_zh_a_tick_tx_timeout(ak_code, trade_date)
@@ -80,66 +81,102 @@ def realtime_stock_detail(ts_code, trade_date):
             print("realtime_stock_detail error", "code:", ts_code, " date:", trade_date, e)
             time.sleep(1)
             is_retry_times -= 1
-
-    sql = """
-    insert into stock_realtime_action (
+    if stock_zh_a_tick_tx_df is None:
+        print("ts_code", ts_code, "download fail")
+        return None
+    else:
+        print("download ts_code from web", ts_code, "cost", time.time() - start_time)
+    start_time = time.time()
+    sql = """ insert into stock_realtime_action_""" + str(ts_code).replace('.', '') + """ (
         ts_code, trade_date, trade_time, price, price_change, volumn, value, kind )
     values
     (%s, %s, %s, %s, %s, %s, %s, %s);
     """
-    if stock_zh_a_tick_tx_df is None:
-        return 0
-
+    insert_data_list = []
     for index, row in stock_zh_a_tick_tx_df.iterrows():
-        result = ak_cur.execute(sql, (
-            ts_code,
-            trade_date,
-            str(row['成交时间']).encode('utf-8'),
-            str(row['成交价格']).encode('utf-8'),
-            str(row['价格变动']).encode('utf-8'),
-            str(row['成交量(手)']).encode('utf-8'),
-            str(row['成交额(元)']).encode('utf-8'),
-            str(row['性质']).encode('utf-8'),
-        ))
-        ak_conn.commit()
+        insert_data_list.append(
+            (
+                ts_code,
+                trade_date,
+                str(row['成交时间']).encode('utf-8'),
+                str(row['成交价格']).encode('utf-8'),
+                str(row['价格变动']).encode('utf-8'),
+                str(row['成交量(手)']).encode('utf-8'),
+                str(row['成交额(元)']).encode('utf-8'),
+                str(row['性质']).encode('utf-8'),
+            )
+        )
+        # result = ak_cur.execute(sql, (
+        #     ts_code,
+        #     trade_date,
+        #     str(row['成交时间']).encode('utf-8'),
+        #     str(row['成交价格']).encode('utf-8'),
+        #     str(row['价格变动']).encode('utf-8'),
+        #     str(row['成交量(手)']).encode('utf-8'),
+        #     str(row['成交额(元)']).encode('utf-8'),
+        #     str(row['性质']).encode('utf-8'),
+        # ))
+    ak_cur.executemany(sql, insert_data_list)
+    ak_conn.commit()
+    print("insert ts_code ", ts_code, " total cost ", time.time() - start_time)
     return is_retry_times
+
+
+def create_realtime_stock_action_table(ts_code):
+    pass
+    ts_code = str(ts_code).replace('.', '')
+    sql = """
+               CREATE TABLE if not exists `stock_realtime_action_""" + ts_code + """` (
+           `ts_code` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+           `trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+           `trade_time` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+           `price` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+           `price_change` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+           `volumn` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+           `value` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+           `kind` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL
+           )   ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+           """
+    ak_cur.execute(sql, ())
+    ak_conn.commit()
+    print("create table stock_realtime_action_" + ts_code)
+
+
+def is_download_realtime_stock_action(trade_date, ts_code):
+    pass
+    ts_code = str(ts_code).replace('.', '')
+    sql = "SHOW TABLES LIKE '%" + ts_code + "%';"
+    # print(sql)
+    ak_cur.execute(sql)
+    result = ak_cur.fetchall()
+    if len(result) == 0:
+        # todo: create table
+        create_realtime_stock_action_table(ts_code)
+        return False
+    sql = "select * from stock_realtime_action_" + ts_code + " where trade_date=%s"
+    ak_cur.execute(sql, (trade_date))
+    result = ak_cur.fetchall()
+    if len(result) == 0:
+        return False
+    print("stock_realtime_action_" + ts_code, trade_date, "is downloaded")
+    return True
 
 
 def download_realtime_stock_action(trade_date, hashmod, value):
     code_list = get_stock_code(start_date)
-    trade_date_list = get_stock_trade_date(trade_date)
-
-    sql = """
-        select trade_date,ts_code from stock_realtime_action where trade_date>=%s group by trade_date,ts_code;
-    """
-
-    ak_cur.execute(sql, (trade_date))
-
-    result = ak_cur.fetchall()
-
-    already_download_realtime_stock_map = {}
-    for item in result:
-        trade_date = item[0]
-        ts_code = item[1]
-        if trade_date in already_download_realtime_stock_map:
-            already_download_realtime_stock_map[trade_date].append(ts_code)
-        else:
-            already_download_realtime_stock_map[trade_date] = []
-            already_download_realtime_stock_map[trade_date].append(ts_code)
-    print("already download ", already_download_realtime_stock_map)
+    trade_date_list = []
+    trade_date_list.append(trade_date)
     for code in code_list:
         if abs(hash(code)) % int(hashmod) != int(value):
             continue
         print("download_realtime_stock_action ", code, " hash(code)", hash(code), " mod", hashmod, " value", value)
         start_time = time.time()
-        for trade_date_item in trade_date_list:
-            if trade_date_item in already_download_realtime_stock_map \
-                    and code in already_download_realtime_stock_map[trade_date_item]:
-                print("skip download ", trade_date_item, "code", code)
-                continue
-            print('download', code, trade_date_item)
-            realtime_stock_detail(code, trade_date_item)
-        print("download_realtime_stock_action " + code + " cost" + str(time.time() - start_time))
+        # 增加查重，如果已经存入到mysql里面了 就不再插入
+        if not is_download_realtime_stock_action(trade_date, code):
+            r = realtime_stock_detail(code, trade_date)
+            if r is not None:
+                print("download ts_code ", code, " total cost:", str(time.time() - start_time))
+        # print("download_realtime_stock_action " + code + " cost" + str(time.time() - start_time))
 
 
 def get_stock_trade_date(trade_date):
@@ -218,10 +255,12 @@ if __name__ == '__main__':
     start_date = (today + datetime.timedelta(-18)).strftime("%Y%m%d")
     hashmod = sys.argv[1]
     value = sys.argv[2]
+    start_date = sys.argv[3]
     start_time = time.time()
     hashmod = 1
     value = 0
-    # start_date =
+    # start_date = '20200702'
     print("start_date", start_date, "mod:", hashmod, " value", value)
     download_realtime_stock_action(start_date, hashmod, value)
     print("Total cost ", time.time() - start_time)
+    # is_download_realtime_stock_action(trade_date='20200703', ts_code='300843.SZ')
