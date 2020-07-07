@@ -44,6 +44,7 @@ def history_stock_daily(ts_code='', adjust="", trade_date=''):
     ak_code = ts_code_2_ak_code(ts_code)
     is_retry_times = 5
     stock_zh_a_daily_hfq_df = None
+    start_time = time.time()
     while is_retry_times > 0:
         try:
             stock_zh_a_daily_hfq_df = stock_zh_a_daily_timeout(symbol=ak_code, adjust=adjust)
@@ -51,15 +52,19 @@ def history_stock_daily(ts_code='', adjust="", trade_date=''):
         except Exception as e:
             print("error is_retry_times", is_retry_times, ts_code, adjust, trade_date)
             is_retry_times -= 1
+    if stock_zh_a_daily_hfq_df is None:
+        return True
+    else:
+        print("download from web", ts_code, " ", adjust, " cost:", time.time() - start_time)
 
+    start_time = time.time()
     sql = """
     insert into akshare_daily (
         ts_code, trade_date, open, high, low, close, adjust, volume, outstanding_share, turnover )
     values
     (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s);
     """
-    if stock_zh_a_daily_hfq_df is None:
-        return True
+
     for index, row in stock_zh_a_daily_hfq_df.iterrows():
         stock_date = str(index).split(" ")[0].replace("-", '')
         if (trade_date != stock_date):
@@ -77,6 +82,7 @@ def history_stock_daily(ts_code='', adjust="", trade_date=''):
             str(row['turnover']).encode('utf-8'),
         ))
         ak_conn.commit()
+        print("insert table ", ts_code, " ", adjust, " cost:", time.time() - start_time)
     return False
 
 
@@ -155,6 +161,23 @@ def get_already_download_stock(trade_date):
     pass
 
 
+def check_realtime_action_data():
+    pass
+    # 检查实时数据完整
+
+
+# 检查最近几个月的实时日志行为
+def get_stock_trade_date(start_check_date=''):
+    pass
+    sql = """
+            select
+                 ts_code,trade_date
+            from stock_daily
+            where trade_date >=%s 
+            group by ts_code, trade_date;
+        """
+
+
 def get_stock_code(trade_date):
     sql = """
             select
@@ -209,12 +232,12 @@ if __name__ == '__main__':
     # print(time.strftime("%Y%m%d", time.localtime()))
     # today = datetime.datetime.now()
     # start_date = (today + datetime.timedelta(-2)).strftime("%Y%m%d")
-    hashmod = sys.argv[1]
-    value = sys.argv[2]
-    start_date = sys.argv[3]
-    # hashmod = 1
-    # value = 0
-    # start_date = '20200618'
+    # hashmod = sys.argv[1]
+    # value = sys.argv[2]
+    # start_date = sys.argv[3]
+    hashmod = 1
+    value = 0
+    start_date = '20200707'
     print("mod:", hashmod, " value", value, " start date", start_date)
     dowload_stock_daily(start_date, hashmod, value)
-    # print("Total cost:", time.time() - start_time)
+    print("Total cost:", time.time() - start_time)

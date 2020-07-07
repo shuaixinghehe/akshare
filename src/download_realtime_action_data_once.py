@@ -142,6 +142,30 @@ def create_realtime_stock_action_table(ts_code):
     print("create table stock_realtime_action_" + ts_code)
 
 
+def get_realtime_stock_action_table_name_list():
+    pass
+    sql = "SHOW TABLES LIKE '%stock_realtime_action_%';"
+    ak_cur.execute(sql)
+    result = ak_cur.fetchall()
+    print(result)
+    table_name_list = []
+    for row in result:
+        # print(row[0])
+        table_name_list.append(row[0])
+    return table_name_list
+
+
+def check_realtime_action_data():
+    pass
+    table_name_list = get_realtime_stock_action_table_name_list()
+    for table_name in table_name_list:
+        sql = """select count(distinct trade_date) cnt from """ + table_name
+        ak_cur.execute(sql)
+        result = ak_cur.fetchall()
+        for row in result:
+            print(table_name, row[0])
+
+
 def is_download_realtime_stock_action(trade_date, ts_code):
     pass
     ts_code = str(ts_code).replace('.', '')
@@ -166,10 +190,14 @@ def download_realtime_stock_action(trade_date, hashmod, value):
     code_list = get_stock_code(start_date)
     trade_date_list = []
     trade_date_list.append(trade_date)
+    download_num = 0
     for code in code_list:
+        download_num += 1
         if abs(hash(code)) % int(hashmod) != int(value):
             continue
-        print("download_realtime_stock_action ", code, " hash(code)", hash(code), " mod", hashmod, " value", value)
+        print("process ", download_num * 1.0 / len(code_list), " ",
+              download_num, " download_realtime_stock_action ", code,
+              " hash(code)", hash(code), " mod", hashmod, " value", value)
         start_time = time.time()
         # 增加查重，如果已经存入到mysql里面了 就不再插入
         if not is_download_realtime_stock_action(trade_date, code):
@@ -253,14 +281,15 @@ if __name__ == '__main__':
     print(time.strftime("%Y%m%d", time.localtime()))
     today = datetime.datetime.now()
     start_date = (today + datetime.timedelta(-18)).strftime("%Y%m%d")
-    hashmod = sys.argv[1]
-    value = sys.argv[2]
-    start_date = sys.argv[3]
+    # hashmod = sys.argv[1]
+    # value = sys.argv[2]
+    # start_date = sys.argv[3]
     start_time = time.time()
     hashmod = 1
     value = 0
-    # start_date = '20200702'
+    start_date = '20200707'
     print("start_date", start_date, "mod:", hashmod, " value", value)
-    download_realtime_stock_action(start_date, hashmod, value)
+    check_realtime_action_data()
+    # download_realtime_stock_action(start_date, hashmod, value)
     print("Total cost ", time.time() - start_time)
     # is_download_realtime_stock_action(trade_date='20200703', ts_code='300843.SZ')
