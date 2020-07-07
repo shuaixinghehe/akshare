@@ -85,7 +85,7 @@ def realtime_stock_detail(ts_code, trade_date):
         print("ts_code", ts_code, "download fail")
         return None
     else:
-        print("download ts_code from web", ts_code, "cost", time.time() - start_time)
+        print("download ts_code from web", ts_code, trade_date, "cost", time.time() - start_time)
     start_time = time.time()
     sql = """ insert into stock_realtime_action_""" + str(ts_code).replace('.', '') + """ (
         ts_code, trade_date, trade_time, price, price_change, volumn, value, kind )
@@ -162,8 +162,11 @@ def check_realtime_action_data():
         sql = """select count(distinct trade_date) cnt from """ + table_name
         ak_cur.execute(sql)
         result = ak_cur.fetchall()
+        table_name_download_map = {}
         for row in result:
+            table_name_download_map[table_name] = row[0]
             print(table_name, row[0])
+    return table_name_download_map
 
 
 def is_download_realtime_stock_action(trade_date, ts_code):
