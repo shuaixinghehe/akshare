@@ -290,9 +290,9 @@ if __name__ == '__main__':
     start_time = time.time()
     hashmod = 1
     value = 0
-    start_date = '20200707'
+    start_date = '20200728'
     print("start_date", start_date, "mod:", hashmod, " value", value)
-    check_realtime_action_data()
-    # download_realtime_stock_action(start_date, hashmod, value)
+    # check_realtime_action_data()
+    download_realtime_stock_action(start_date, hashmod, value)
     print("Total cost ", time.time() - start_time)
     # is_download_realtime_stock_action(trade_date='20200703', ts_code='300843.SZ')

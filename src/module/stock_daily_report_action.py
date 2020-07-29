@@ -39,74 +39,6 @@ def get_ts_code_list():
 insert_ts_code_map = {}
 
 
-def sharding_action_table(batch_size=0, offset_pos=0):
-    pass
-    sql = """ select * from stock_realtime_action limit """ + str(offset_pos) + "," + str(batch_size)
-    print("sql", sql)
-    ak_cur.execute(sql, ())
-    result = ak_cur.fetchall()
-
-    for row in result:
-        table_name_part = str(row[0]).replace(".", "")
-        insert_sql = """ insert into stock_realtime_action_""" + table_name_part + " (ts_code,trade_date,trade_time,price,price_change,volumn,value,kind) values "
-        insert_sql += """  ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')""".format(
-            row[0],
-            row[1],
-            row[2],
-            row[3],
-            row[4],
-            row[5],
-            row[6],
-            row[7],
-        )
-        # print("singel sql", insert_sql)
-        ak_cur.execute(insert_sql, ())
-        ak_conn.commit()
-
-
-def exce_insert_ts_code_map(map={}, limit=1000):
-    pass
-    insert_sql = ""
-    for key in map.keys():
-        if len(insert_ts_code_map[key]) > limit:
-            insert_sql = """ insert into stock_realtime_action_""" + key + " (ts_code,trade_date,trade_time,price,price_change,volumn,value,kind) values "
-            insert_sql += insert_ts_code_map[key][0:-1]
-            insert_sql += ";"
-            # print("merge sql", insert_sql)
-            insert_ts_code_map[key] = ""
-            ak_cur.execute(insert_sql, ())
-            ak_conn.commit()
-    # print("insert_sql->", insert_sql)
-    # ak_cur.execute(insert_sql, ())
-    # ak_conn.commit()
-
-
-def create_shareding_table(ts_code='default'):
-    pass
-    ts_code_list = get_ts_code_list()
-    print("need create table size ", len(ts_code_list))
-    for code in ts_code_list:
-        print(code, str(code).replace('.', ""))
-        ts_code = str(code).replace('.', "")
-        if abs(hash(ts_code)) % 100 == 0:
-            time.sleep(2)
-        sql = """
-            CREATE TABLE if not exists `stock_realtime_action_""" + ts_code + """` (
-        `ts_code` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-        `trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-        `trade_time` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-        `price` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-        `price_change` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-        `volumn` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-        `value` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-        `kind` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL
-        )   ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
-        """
-
-        ak_cur.execute(sql, ())
-        ak_conn.commit()
-
-
 def insert_daily_report_up_down_detail(trade_date=''):
     select_sql = "select * from tushare.stock_daily_report_basic where trade_date={}".format(trade_date)
 
@@ -125,7 +57,7 @@ def insert_daily_report_up_down_detail(trade_date=''):
             # print(line, line.split(' ')[-1].replace(',', ''))
             if str(line).find(',') != -1:
                 column_name_list.append(line.split(' ')[-1].replace(',', ''))
-        sql = sql.format(trade_date)
+        sql = sql.format(trade_date, trade_date)
         # print("sql", sql)
         ts_cur.execute(sql, ())
         result = ts_cur.fetchall()
@@ -145,44 +77,48 @@ def insert_daily_report_up_down_detail(trade_date=''):
         insert_sql = "insert into tushare.stock_daily_report_basic (trade_date,detail) values ('{}','{}')" \
             .format(trade_date, json.dumps(column_map, ensure_ascii=False))
         print("insert sql", insert_sql)
-        ts_cur.execute(insert_sql,())
+        ts_cur.execute(insert_sql, ())
         ts_conn.commit()
 
 
-def truncate_shareding_table(ts_code='default'):
-    pass
-    ts_code_list = get_ts_code_list()
-    sql = ""
-    for code in ts_code_list:
-        print(code, str(code).replace('.', ""))
-        ts_code = str(code).replace('.', "")
-        if abs(hash(ts_code)) % 100 == 0:
-            time.sleep(2)
-        sql = """ truncate table stock_realtime_action_""" + ts_code + """;"""
-        # sql = """select count(1) from """ + """stock_realtime_action_""" + ts_code
-        ak_cur.execute(sql, ())
-        # result = ak_cur.fetchall()
-        # for row in result:
-        #     print(ts_code, row[0])
-        ak_conn.commit()
+def insert_daily_report_continue_high(trade_date=''):
+    print("update stock_daily_report_basic ")
+    ofile_sql_templaet = open('./stock_daily_report_up_down_detail_template.sql', 'r')
+    sql = ''
+    column_name_list = []
+    for line in ofile_sql_templaet:
+        line = line.strip()
+        sql = sql + " " + line
+        # print(line, line.split(' ')[-1].replace(',', ''))
+        if str(line).find(',') != -1:
+            column_name_list.append(line.split(' ')[-1].replace(',', ''))
+    sql = sql.format(trade_date, trade_date)
+    # print("sql", sql)
+    ts_cur.execute(sql, ())
+    result = ts_cur.fetchall()
+    column_value_list = []
+    column_map = {}
+    for row in result:
+        print('len(row)', len(row), 'len(column_name_list)', len(column_name_list))
+        for i in range(0, len(row)):
+            pass
+            column_value_list.append(str(row[i]))
+            column_map[column_name_list[i]] = row[i]
+        # print(column_name_list[i], row[i])
 
-
-def start_sharding(hashmod, value):
-    pass
-    batch_size = 10000
-    end_round = 30000
-    for i in range(0, end_round):
-        if abs(hash(i)) % hashmod == value:
-            start_time = time.time()
-            sharding_action_table(batch_size, offset_pos=i * batch_size)
-            print(hashmod, value, i, " round  cost ", time.time() - start_time)
-    # print(insert_ts_code_map)
-    # exce_insert_ts_code_map(insert_ts_code_map, 0)
+    # inset_sql = "insert into tushare.stock_daily_report_basic ({})".format(",".join(column_name_list))
+    # inset_sql += " values ({});".format(",".join(column_value_list))
+    print("column_map", column_map.values())
+    insert_sql = "insert into tushare.stock_daily_report_basic (trade_date,detail) values ('{}','{}')" \
+        .format(trade_date, json.dumps(column_map, ensure_ascii=False))
+    print("insert sql", insert_sql)
+    ts_cur.execute(insert_sql, ())
+    ts_conn.commit()
 
 
 if __name__ == '__main__':
     pass
-    insert_daily_report_up_down_detail('20200724')
+    insert_daily_report_up_down_detail('20200729')
     # create_shareding_table()
     # sharding_action_table(batch_size=10000, offset_pos=0)
     print('参数个数为:', len(sys.argv), '个参数。')

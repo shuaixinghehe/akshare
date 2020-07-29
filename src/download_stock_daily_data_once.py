@@ -237,7 +237,7 @@ if __name__ == '__main__':
     # start_date = sys.argv[3]
     hashmod = 1
     value = 0
-    start_date = '20200707'
+    start_date = '20200728'
     print("mod:", hashmod, " value", value, " start date", start_date)
     dowload_stock_daily(start_date, hashmod, value)
     print("Total cost:", time.time() - start_time)

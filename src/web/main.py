@@ -4,12 +4,14 @@ import random
 import time
 import json
 import web
+import datetime
 
 import mydb
 
 urls = (
     '/check(.*)', 'Check',
-    '/daily_report_(.*)', 'DailyReport'
+    '/daily_report_(.*)', 'DailyReport',
+    '/daily_change_report_(.*)', 'DailyChangeReport'
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'),
@@ -130,62 +132,37 @@ class DailyReport:
             # print("trade_date", trade_date, "detail", detail)
             stock_name_data = mydb.get_stock_name(trade_date)
             stock_name_map = {}
+            stock_basic_map = {}
             for item in stock_name_data:
                 stock_name_map[item['ts_code']] = item['name']
+                stock_basic_map[item['ts_code']] = {}
+                stock_basic_map[item['ts_code']]['industry'] = item['industry']
             stock_daily_map = {}
             stock_daily_data = mydb.get_stock_daily(trade_date)
             for item in stock_daily_data:
                 stock_daily_map[item['ts_code']] = {}
-                stock_daily_map[item['ts_code']]['pct_chg'] = item['pct_chg']
+                stock_daily_map[item['ts_code']]['pct_chg'] = str(item['pct_chg'])[0:4]
             print("stock_daily_map", stock_daily_map)
-            return render.daily_report(trade_date, detail_map, stock_name_map, stock_daily_map)
+            return render.daily_report(trade_date, detail_map, stock_name_map, stock_daily_map, stock_basic_map)
 
 
-# 开盘买 最高卖
-def strategy1(buy_open, sell_high):
-    pass
-    return round(10000 / float(buy_open) * (float(sell_high) - float(buy_open)), 2)
-
-
-# 开盘买 开盘卖
-def strategy2(buy_open, sell_open):
-    pass
-    return round(10000 / float(buy_open) * (float(sell_open) - float(buy_open)), 2)
-
-
-def get_random_data():
-    pass
-    stock_data = mydb.get_stock_list('20200617')
-    print
-    len(stock_data)
-    stock_list = []
-    data = []
-    test_1 = 0
-    test_2 = 0
-    for item in stock_data:
-        if int(hash(item['vol']) + time.time()) % 1000 > 600 and test_1 < 20:
-            item_map = {}
-            item_map['ts_code'] = item['ts_code']
-            item_map['buy_date'] = '20200615'
-            item_map['sell_date'] = '20200616'
-            data.append(item_map)
-            test_1 += 1
-        elif int(hash(item['vol']) + time.time()) % 1000 > 800 and test_2 < 20:
-            item_map = {}
-            item_map['ts_code'] = item['ts_code']
-            item_map['buy_date'] = '20200616'
-            item_map['sell_date'] = '20200617'
-            data.append(item_map)
-            test_2 += 1
-    return data
-
-
-# 随机买 随机卖
-def strategy3(buy_low, buy_high, sell_low, sell_high):
-    pass
-    random_buy = random.uniform(float(buy_low), float(buy_high))
-    random_sell = random.uniform(float(sell_low), float(sell_high))
-    return round(10000 / random_buy * (random_sell - random_buy), 2)
+class DailyChangeReport:
+    def GET(self, trade_date):
+        pass
+        back_trade_date = datetime.datetime.strptime(trade_date, '%Y%m%d')
+        start_date = (back_trade_date + datetime.timedelta(-9)).strftime("%Y%m%d")
+        print(start_date, back_trade_date)
+        stock_continue_high_data = mydb.get_stock_continue_high(start_date, trade_date)
+        stock_continue_high_list = []
+        for item in stock_continue_high_data:
+            temp_map = {}
+            temp_map['ts_code'] = item['ts_code']
+            temp_map['name'] = item['name']
+            temp_map['cnt'] = item['cnt']
+            temp_map['trade_date_list'] = sorted(str(item['trade_date_list']).split(','))
+            print(temp_map)
+            stock_continue_high_list.append(temp_map)
+        return render.daily_report_continue_high(trade_date, stock_continue_high_list)
 
 
 if __name__ == "__main__":

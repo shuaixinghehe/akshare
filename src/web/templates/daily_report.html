@@ -1,4 +1,4 @@
-$def with(trade_date,detail_map,stock_name_map,stock_daily_map)
+$def with(trade_date,detail_map,stock_name_map,stock_daily_map,stock_basic_map)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +6,18 @@ $def with(trade_date,detail_map,stock_name_map,stock_daily_map)
     <title>定制日报</title>
 </head>
 <body>
+<style type="text/css">
+    .demo {
+        font-size: 18px;
+    }
+    .super span{
+        vertical-align: text-top;
+        font-size: 4px;
+        color: red;
+    }
+</style>
+
+
 <h1>日期：$trade_date</h1><br>
 <table>
     <th>
@@ -44,94 +56,167 @@ $def with(trade_date,detail_map,stock_name_map,stock_daily_map)
         <td>上涨1%区间</td>
         <td>$detail_map['up_0_1_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_0_1_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]
-		        (
-                $stock_daily_map[ts_code]['pct_chg']
-		        )
-		</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_0_1_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨2%区间</td>
         <td>$detail_map['up_1_2_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_1_2_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_1_2_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨3%区间</td>
         <td>$detail_map['up_2_3_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_2_3_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_2_3_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨4%区间</td>
         <td>$detail_map['up_3_4_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_3_4_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_3_4_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨5%区间</td>
         <td>$detail_map['up_4_5_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_4_5_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_4_5_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']%
+                    $stock_basic_map[ts_code]['industry']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨6%区间</td>
         <td>$detail_map['up_5_6_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_5_6_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_5_6_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']%
+                    $stock_basic_map[ts_code]['industry']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨7%区间</td>
         <td>$detail_map['up_6_7_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_6_7_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_6_7_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']%
+                    $stock_basic_map[ts_code]['industry']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨8%区间</td>
         <td>$detail_map['up_7_8_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_7_8_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_7_8_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']%
+                    $stock_basic_map[ts_code]['industry']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
         <td>上涨9%区间</td>
         <td>$detail_map['up_9_stock_cnt']</td>
         <td>
-            $for ts_code in detail_map['up_9_stock_set'].split(','):
-                $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
-                <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
-                $stock_name_map[ts_code]</a>
+            <div class="demo">
+                <div class="super">
+                $for ts_code in detail_map['up_9_stock_set'].split(','):
+                    $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                    <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                    $stock_name_map[ts_code]
+                    </a>
+                    <span>
+                    $stock_daily_map[ts_code]['pct_chg']%
+                    $stock_basic_map[ts_code]['industry']
+                    </span>
+                </div>
+            </div>
         </td>
     </tr>
 </table>

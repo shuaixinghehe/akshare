@@ -1,0 +1,54 @@
+$def with(trade_date,stock_continue_high_list)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>定制日报</title>
+</head>
+<body>
+<style type="text/css">
+    .demo {
+        font-size: 18px;
+    }
+
+    .super span {
+        vertical-align: text-top;
+        font-size: 4px;
+        color: red;
+    }
+</style>
+
+
+<h1>日期：$trade_date</h1><br>
+<table>
+    <th>
+        ts_code
+    </th>
+    <th>
+        name
+    </th>
+    <th>
+        涨停次数
+    </th>
+    <th>
+        涨停日期
+    </th>
+    $for item in stock_continue_high_list:
+    <tr>
+        <td>
+            $item['ts_code']
+        </td>
+        <td>
+            $item['name']
+        </td>
+        <td>
+            $item['cnt']
+        </td>
+        <td>
+            $item['trade_date_list']
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

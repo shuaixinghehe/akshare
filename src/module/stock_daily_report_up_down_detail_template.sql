@@ -93,5 +93,26 @@ select
 
         cast(sum(if(convert(pct_chg,DECIMAL(5,2))<=-9.0 ,1,0)) as char) down_9_stock_cnt,
         group_concat(if(convert(pct_chg,DECIMAL(5,2))<=-9.0 ,ts_code,null)) down_9_stock_set
-from stock_daily
-where trade_date={};
+from
+(
+    select T1.*
+    from
+    (
+        select *
+        from stock_daily
+        where trade_date={} and low!=high
+    )T1
+    join
+    (
+        select *
+        from stock_basic
+        where dt={} and market  not in ('科创板')
+    )T2 on (T1.ts_code=T2.ts_code)
+)T3
+
+
+
+
+
+
+
