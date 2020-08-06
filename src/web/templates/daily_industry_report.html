@@ -1,0 +1,134 @@
+$def with(trade_date,data)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>定制日报</title>
+</head>
+<body>
+<style type="text/css">
+    .demo {
+        font-size: 18px;
+    }
+
+    .super span {
+        vertical-align: text-top;
+        font-size: 4px;
+        color: red;
+    }
+</style>
+
+
+<h1>日期：$trade_date</h1><br>
+<table>
+    <tr>
+    <th>
+        ts_code
+    </th>
+    <th>
+        name
+    </th>
+    <th>
+        收盘
+    </th>
+    <th>
+        换手率
+    </th>
+    <th>
+        流通股换手率
+    </th>
+    <th>
+        量比
+    </th>
+    <th>
+        市盈率（总市值/净利润， 亏损的PE为空）
+    </th>
+    <th>
+        市盈率（TTM，亏损的PE为空
+    </th>
+    <th>
+        市净率（总市值/净资产）
+    </th>
+    <th>
+        市销率
+    </th>
+    <th>
+        市销率（TTM）
+    </th>
+    <th>
+        总股本 （亿股）
+    </th>
+    <th>
+        流通股本 （亿股）
+    </th>
+    <th>
+        自由流通股本 （亿）
+    </th>
+    <th>
+        总市值 （亿元）
+    </th>
+    <th>
+        流通市值（亿元）
+    </th>
+    </tr>
+    $for item in data:
+    <tr>
+        <td>
+        $ t = item['ts_code'].split(".")[0]
+        <a href="http://stockpage.10jqka.com.cn/$t/">$item['ts_code']</a>
+        </td>
+        <td>
+        $item['name']
+        </td>
+        <td>
+        $item['close']
+        </td>
+        <td>
+        $item['turnover_rate']
+        </td>
+        <td>
+        $item['turnover_rate_f']
+        </td>
+        <td>
+        $item['volume_ratio']
+        </td>
+        <td>
+        $item['pe']
+        </td>
+        <td>
+        $item['pe_ttm']
+        </td>
+        <td>
+        $item['pb']
+        </td>
+        <td>
+        $item['ps']
+        </td>
+        <td>
+        $item['ps_ttm']
+        </td>
+        <td>
+        $ a  = int(float(item['total_share'])/10000)
+        $a
+        </td>
+        <td>
+        $ a = int(float(item['float_share'])/10000)
+        $a
+        </td>
+        <td>
+        $ a = int(float(item['free_share'])/10000)
+        $a
+        </td>
+        <td>
+        $ a = int(float(item['total_mv'])/10000)
+        $a
+        </td>
+        <td>
+        $ a = int(float(item['circ_mv'])/10000)
+        $a 亿
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

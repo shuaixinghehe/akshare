@@ -1,4 +1,4 @@
-$def with(trade_date,detail_map,stock_name_map,stock_daily_map,stock_basic_map)
+$def with(trade_date,detail_map,stock_name_map,stock_daily_map,stock_basic_map,stock_daily_basic_map,up_9_stock_industry_tuple_list)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -157,6 +157,7 @@ $def with(trade_date,detail_map,stock_name_map,stock_daily_map,stock_basic_map)
                     <span>
                     $stock_daily_map[ts_code]['pct_chg']%
                     $stock_basic_map[ts_code]['industry']
+                    $stock_daily_basic_map[ts_code]['circ_mv']亿
                     </span>
                 </div>
             </div>
@@ -176,6 +177,7 @@ $def with(trade_date,detail_map,stock_name_map,stock_daily_map,stock_basic_map)
                     <span>
                     $stock_daily_map[ts_code]['pct_chg']%
                     $stock_basic_map[ts_code]['industry']
+                    $stock_daily_basic_map[ts_code]['circ_mv']亿
                     </span>
                 </div>
             </div>
@@ -195,6 +197,7 @@ $def with(trade_date,detail_map,stock_name_map,stock_daily_map,stock_basic_map)
                     <span>
                     $stock_daily_map[ts_code]['pct_chg']%
                     $stock_basic_map[ts_code]['industry']
+                    $stock_daily_basic_map[ts_code]['circ_mv']亿
                     </span>
                 </div>
             </div>
@@ -214,7 +217,39 @@ $def with(trade_date,detail_map,stock_name_map,stock_daily_map,stock_basic_map)
                     <span>
                     $stock_daily_map[ts_code]['pct_chg']%
                     $stock_basic_map[ts_code]['industry']
+                    $stock_daily_basic_map[ts_code]['circ_mv']亿
                     </span>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>上涨9%区间</td>
+        <td>$detail_map['up_9_stock_cnt']</td>
+        <td>
+            <div class="demo">
+                <div class="super">
+                <table border='1'>
+                $for item in up_9_stock_industry_tuple_list:
+                    <tr>
+                    <td>
+                    <a href="/daily_industry_report?trade_date=$trade_date&&industry=$item[0]">$item[0]</a>
+                    </td>
+                    <td>
+                    $for sub_item in item[1]:
+                        $ ts_code = sub_item[0]
+                        $ sina_name = ts_code.split(".")[1].lower()+ts_code.split(".")[0]
+                        <a href="https://finance.sina.com.cn/realstock/company/$sina_name/nc.shtml">
+                        $stock_name_map[ts_code]
+                        </a>
+                        <span>
+                        $stock_daily_map[ts_code]['pct_chg']%
+                        $stock_basic_map[ts_code]['industry']
+                        $stock_daily_basic_map[ts_code]['circ_mv']亿
+                        </span>
+                    </td>
+                    </tr>
+                </table>
                 </div>
             </div>
         </td>

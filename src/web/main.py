@@ -11,7 +11,10 @@ import mydb
 urls = (
     '/check(.*)', 'Check',
     '/daily_report_(.*)', 'DailyReport',
-    '/daily_change_report_(.*)', 'DailyChangeReport'
+    '/daily_high_report_(.*)', 'DailyHighReport',
+    '/daily_industry_report', 'DailyIndustryReport',
+    '/daily_change_aggr_report', 'DailyChangeAggrReport',
+    '/daily_top_inst_report', 'DailyTopInstReport'
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'),
@@ -24,93 +27,35 @@ t_globals = {
 render = web.template.render('templates/', globals=t_globals)
 
 
-class Check:
-    def GET(self, name):
-        # data = web.input()
-        data = None
-        if name == 'random':
-            data = get_random_data()
-        else:
-            data = mydb.get_model_reco_stock_detail(name)
-        print(data)
-        trade_history_key_list = []
-        trade_history_detail_map = {}
-        buy_date_map = {}
-        for item in data:
-            ts_code = item['ts_code']
-            buy_date = item['buy_date']
-            key = buy_date + "_" + ts_code
-            trade_history_key_list.append(key)
-            sell_date = item['sell_date']
-            print
-            item['ts_code'], item['buy_date'], item['sell_date']
-            stock_detail_data = mydb.get_stock_detail(ts_code=ts_code, trade_date=buy_date)
-            history_item_map = {}
-            if stock_detail_data is not None:
-                for detail in stock_detail_data:
-                    history_item_map['ts_code'] = ts_code
-                    history_item_map['buy_date'] = buy_date
-                    history_item_map['sell_date'] = sell_date
-                    history_item_map['buy_high'] = detail['high']
-                    history_item_map['buy_open'] = detail['open']
-                    history_item_map['buy_low'] = detail['low']
-                    history_item_map['buy_close'] = detail['close']
+class DailyTopInstReport:
+    def GET(self):
+        input_data = web.input()
+        trade_date = input_data.trade_date
+        back_trade_date = datetime.datetime.strptime(trade_date, '%Y%m%d')
+        list_date = (back_trade_date + datetime.timedelta(-90)).strftime("%Y%m%d")
+        data = mydb.get_stock_daily_top_inst(trade_date, list_date)
 
-            stock_detail_data = mydb.get_stock_detail(ts_code=ts_code, trade_date=sell_date)
-            if stock_detail_data is not None:
-                for detail in stock_detail_data:
-                    history_item_map['sell_high'] = detail['high']
-                    history_item_map['sell_open'] = detail['open']
-                    history_item_map['sell_low'] = detail['low']
-                    history_item_map['sell_close'] = detail['close']
-                buy_date_map[buy_date] = True
+        print('trade_date', trade_date, 'data', data)
+        # for item in data:
+        #     print(item)
+        return render.daily_top_inst_report(trade_date, data)
 
-            trade_history_detail_map[key] = history_item_map
-            if trade_history_detail_map[key].has_key('buy_open') and trade_history_detail_map[key].has_key('sell_high'):
-                trade_history_detail_map[key]['strategy1'] = strategy1(trade_history_detail_map[key]['buy_open'],
-                                                                       trade_history_detail_map[key]['sell_high'])
-            if trade_history_detail_map[key].has_key('buy_open') and trade_history_detail_map[key].has_key('sell_open'):
-                trade_history_detail_map[key]['strategy2'] = strategy2(trade_history_detail_map[key]['buy_open'],
-                                                                       trade_history_detail_map[key]['sell_open'])
-                trade_history_detail_map[key]['strategy3'] = strategy3(
-                    trade_history_detail_map[key]['buy_low'],
-                    trade_history_detail_map[key]['buy_high'],
-                    trade_history_detail_map[key]['sell_low'],
-                    trade_history_detail_map[key]['sell_high']
 
-                )
-        buy_date_strategys_map = {}
-        for buy_date in buy_date_map.keys():
-            buy_cnt = 0
-            for key in trade_history_detail_map.keys():
-                if key.split('_')[0] == buy_date and trade_history_detail_map[key].has_key('strategy1'):
-                    buy_cnt += 1
-                    if buy_date_strategys_map.has_key(buy_date):
-                        buy_date_strategys_map[buy_date]['total_strategy1'] += trade_history_detail_map[key][
-                            'strategy1']
-                        buy_date_strategys_map[buy_date]['total_strategy2'] += trade_history_detail_map[key][
-                            'strategy2']
-                        buy_date_strategys_map[buy_date]['total_strategy3'] += trade_history_detail_map[key][
-                            'strategy3']
-                    else:
-                        buy_date_strategys_map[buy_date] = {}
-                        buy_date_strategys_map[buy_date]['total_strategy1'] = trade_history_detail_map[key]['strategy1']
-                        buy_date_strategys_map[buy_date]['total_strategy2'] = trade_history_detail_map[key]['strategy2']
-                        buy_date_strategys_map[buy_date]['total_strategy3'] = trade_history_detail_map[key]['strategy3']
-            if buy_date_strategys_map.has_key(buy_date):
-                buy_date_strategys_map[buy_date]['total_strategy1_rate'] = round(buy_date_strategys_map[buy_date][
-                                                                                     'total_strategy1'] / (
-                                                                                         buy_cnt * 10000), 2)
-                buy_date_strategys_map[buy_date]['total_strategy2_rate'] = round(buy_date_strategys_map[buy_date][
-                                                                                     'total_strategy2'] / (
-                                                                                         buy_cnt * 10000), 2)
-                buy_date_strategys_map[buy_date]['total_strategy3_rate'] = round(buy_date_strategys_map[buy_date][
-                                                                                     'total_strategy3'] / (
-                                                                                         buy_cnt * 10000), 2)
-        print('trade_history_detail_map', buy_date_strategys_map)
-
-        trade_history_key_list = sorted(trade_history_key_list)
-        return render.check(trade_history_detail_map, trade_history_key_list, buy_date_strategys_map)
+class DailyChangeAggrReport:
+    def GET(self):
+        pass
+        input_data = web.input()
+        trade_date = input_data.trade_date
+        back_trade_date = datetime.datetime.strptime(trade_date, '%Y%m%d')
+        list_trade_date = (back_trade_date + datetime.timedelta(-90)).strftime("%Y%m%d")
+        day_5_before_trade_date = (back_trade_date + datetime.timedelta(-7)).strftime("%Y%m%d")
+        day_10_before_trade_date = (back_trade_date + datetime.timedelta(-14)).strftime("%Y%m%d")
+        day_20_before_trade_date = (back_trade_date + datetime.timedelta(-28)).strftime("%Y%m%d")
+        data = mydb.get_stock_change_aggr(trade_date, list_trade_date, day_5_before_trade_date,
+                                          day_10_before_trade_date, day_20_before_trade_date)
+        return render.daily_change_aggr_report(trade_date, data)
+        # for item in data:
+        #     print(item)
 
 
 class DailyReport:
@@ -121,6 +66,7 @@ class DailyReport:
             data = mydb.get_stock_daily_report_detail(trade_date)
             trade_date = ''
             detail_map = {}
+            detail_high_map = []
             for item in data:
                 print('item trade_date', item['trade_date'])
                 print('item detail', item['detail'])
@@ -143,10 +89,55 @@ class DailyReport:
                 stock_daily_map[item['ts_code']] = {}
                 stock_daily_map[item['ts_code']]['pct_chg'] = str(item['pct_chg'])[0:4]
             print("stock_daily_map", stock_daily_map)
-            return render.daily_report(trade_date, detail_map, stock_name_map, stock_daily_map, stock_basic_map)
+
+            stock_daily_basic_data = mydb.get_stock_daily_basic(trade_date)
+            stock_daily_basic_map = {}
+            for item in stock_daily_basic_data:
+                stock_daily_basic_map[item['ts_code']] = {}
+                stock_daily_basic_map[item['ts_code']]['circ_mv'] = str(int(float(item['circ_mv']) / 10000))
+
+            up_9_stock_industry_map = {}  # 按照行业分类
+            for ts_code in str(detail_map['up_9_stock_set']).split(","):
+                print("stock", ts_code)
+                if stock_basic_map[ts_code]['industry'] in up_9_stock_industry_map.keys():
+                    pass
+                    up_9_stock_industry_map[stock_basic_map[ts_code]['industry']][ts_code] = \
+                        int(stock_daily_basic_map[ts_code]['circ_mv'])
+                else:
+                    up_9_stock_industry_map[stock_basic_map[ts_code]['industry']] = {}
+                    up_9_stock_industry_map[stock_basic_map[ts_code]['industry']][ts_code] = \
+                        int(stock_daily_basic_map[ts_code]['circ_mv'])
+            up_9_stock_industry_list = sorted(up_9_stock_industry_map.items(), key=lambda item: len(item[1].keys()),
+                                              reverse=True)
+            up_9_stock_industry_tuple_list = []
+            for t in up_9_stock_industry_list:
+                up_9_stock_industry_tuple_list.append(
+                    (t[0], sorted(t[1].items(), key=lambda item: item[1], reverse=True)))
+            print('up_9_stock_industry_tuple_list', up_9_stock_industry_tuple_list)
+            print('up_9_stock_industry_list', json.dumps(up_9_stock_industry_list))
+            for industry in up_9_stock_industry_map.keys():
+                tuple_list = sorted(up_9_stock_industry_map[industry].items(), key=lambda item: item[1],
+                                    reverse=True)
+                print(industry, tuple_list)
+                for i in tuple_list:
+                    print(i[0], i[1])
+            print("up_9_stock_industry_order_map", json.dumps(up_9_stock_industry_map))
+            return render.daily_report(trade_date, detail_map, stock_name_map, stock_daily_map, stock_basic_map,
+                                       stock_daily_basic_map, up_9_stock_industry_tuple_list)
 
 
-class DailyChangeReport:
+class DailyIndustryReport:
+    def GET(self):
+        input_data = web.input()
+        print('input data', input_data)
+        data = mydb.get_industry_report(input_data.trade_date, input_data.industry)
+        print(data)
+        # for item in data:
+        #     print(item)
+        return render.daily_industry_report(input_data.trade_date, data)
+
+
+class DailyHighReport:
     def GET(self, trade_date):
         pass
         back_trade_date = datetime.datetime.strptime(trade_date, '%Y%m%d')
@@ -162,7 +153,22 @@ class DailyChangeReport:
             temp_map['trade_date_list'] = sorted(str(item['trade_date_list']).split(','))
             print(temp_map)
             stock_continue_high_list.append(temp_map)
-        return render.daily_report_continue_high(trade_date, stock_continue_high_list)
+        stock_name_data = mydb.get_stock_name(trade_date)
+        stock_name_map = {}
+        stock_basic_map = {}
+        for item in stock_name_data:
+            stock_name_map[item['ts_code']] = item['name']
+            stock_basic_map[item['ts_code']] = {}
+            stock_basic_map[item['ts_code']]['industry'] = item['industry']
+
+        stock_daily_basic_data = mydb.get_stock_daily_basic(trade_date)
+        stock_daily_basic_map = {}
+        for item in stock_daily_basic_data:
+            stock_daily_basic_map[item['ts_code']] = {}
+            stock_daily_basic_map[item['ts_code']]['circ_mv'] = str(int(float(item['circ_mv']) / 10000))
+
+        return render.daily_report_continue_high(trade_date, stock_continue_high_list, stock_basic_map,
+                                                 stock_daily_basic_map)
 
 
 if __name__ == "__main__":

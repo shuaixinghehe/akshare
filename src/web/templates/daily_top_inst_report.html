@@ -1,0 +1,95 @@
+$def with(trade_date,data)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>定制日报</title>
+</head>
+<body>
+<style type="text/css">
+    .demo {
+        font-size: 18px;
+    }
+
+    .super span {
+        vertical-align: text-top;
+        font-size: 4px;
+        color: red;
+    }
+</style>
+
+
+<h1>日期：$trade_date</h1><br>
+<table>
+    <tr>
+    <th>
+        序号
+    </th>
+    <th>
+        ts_code
+    </th>
+    <th>
+        name
+    </th>
+    <th>
+        涨跌幅变化
+    </th>
+    <th>
+        营业部名称
+    </th>
+    <th>
+        买入额（万）
+    </th>
+    <th>
+        买入占总成交比例
+    </th>
+    <th>
+        卖出额（万）
+    </th>
+    <th>
+       	卖出占总成交比例
+    </th>
+    <th>
+       	净成交额（万）
+    </th>
+    </tr>
+    $ id = 1
+    $for item in data:
+    <tr>
+        <td>
+            $id
+            $ id = id + 1
+        </td>
+        <td>
+        $ t = item['ts_code'].split(".")[0]
+        <a href="http://stockpage.10jqka.com.cn/$t/">$item['ts_code']</a>
+        </td>
+        <td>
+        $item['name']
+        </td>
+        <td>
+        $item['pct_chg']
+        </td>
+        <td>
+        $item['exalter']
+        </td>
+        <td>
+        $item['buy']
+        </td>
+        <td>
+        $item['buy_rate']
+        </td>
+        <td>
+        $item['sell']
+        </td>
+        <td>
+        $item['sell_rate']
+        </td>
+        <td>
+        $item['net_buy']
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

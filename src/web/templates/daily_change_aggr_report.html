@@ -1,0 +1,83 @@
+$def with(trade_date,data)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>定制日报</title>
+</head>
+<body>
+<style type="text/css">
+    .demo {
+        font-size: 18px;
+    }
+
+    .super span {
+        vertical-align: text-top;
+        font-size: 4px;
+        color: red;
+    }
+</style>
+
+
+<h1>日期：$trade_date</h1><br>
+<table>
+    <tr>
+    <th>
+        序号
+    </th>
+    <th>
+        ts_code
+    </th>
+    <th>
+        name
+    </th>
+    <th>
+        开盘
+    </th>
+    <th>
+        收盘
+    </th>
+    <th>
+        5日涨跌幅
+    </th>
+    <th>
+        10日涨跌幅
+    </th>
+    <th>
+        20日涨跌幅
+    </th>
+    </tr>
+    $ id = 1
+    $for item in data:
+    <tr>
+        <td>
+        $id
+        $ id = id +1
+        </td>
+        <td>
+        $ t = item['ts_code'].split(".")[0]
+        <a href="http://stockpage.10jqka.com.cn/$t/">$item['ts_code']</a>
+        </td>
+        <td>
+        $item['name']
+        </td>
+        <td>
+        $item['high']
+        </td>
+        <td>
+        $item['close']
+        </td>
+        <td>
+        $item['5_daily_rate']
+        </td>
+        <td>
+        $item['10_daily_rate']
+        </td>
+        <td>
+        $item['20_daily_rate']
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

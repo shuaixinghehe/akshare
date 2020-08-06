@@ -1,4 +1,4 @@
-$def with(trade_date,stock_continue_high_list)
+$def with(trade_date,stock_continue_high_list,stock_basic_map,stock_daily_basic_map)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,10 +36,20 @@ $def with(trade_date,stock_continue_high_list)
     $for item in stock_continue_high_list:
     <tr>
         <td>
+            $ ts_code_str = item['ts_code'].split(".")[0]
+            <a href="http://stockpage.10jqka.com.cn/$ts_code_str/">
             $item['ts_code']
+            </a>
         </td>
         <td>
+            <div class="demo">
+            <div class="super">
             $item['name']
+            <span>
+            $stock_basic_map[item['ts_code']]['industry']
+            </span>
+            </div>
+            </div>
         </td>
         <td>
             $item['cnt']
