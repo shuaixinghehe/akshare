@@ -118,7 +118,7 @@ def insert_daily_report_continue_high(trade_date=''):
 
 if __name__ == '__main__':
     pass
-    insert_daily_report_up_down_detail('20200805')
+    insert_daily_report_up_down_detail('20200807')
     # create_shareding_table()
     # sharding_action_table(batch_size=10000, offset_pos=0)
     print('参数个数为:', len(sys.argv), '个参数。')

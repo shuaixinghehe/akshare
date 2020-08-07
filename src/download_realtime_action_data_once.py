@@ -284,13 +284,13 @@ if __name__ == '__main__':
     print(time.strftime("%Y%m%d", time.localtime()))
     today = datetime.datetime.now()
     start_date = (today + datetime.timedelta(-18)).strftime("%Y%m%d")
-    # hashmod = sys.argv[1]
-    # value = sys.argv[2]
-    # start_date = sys.argv[3]
-    start_time = time.time()
-    hashmod = 1
-    value = 0
-    start_date = '20200728'
+    hashmod = sys.argv[1]
+    value = sys.argv[2]
+    start_date = sys.argv[3]
+    # start_time = time.time()
+    # hashmod = 1
+    # value = 0
+    # start_date = '20200729'
     print("start_date", start_date, "mod:", hashmod, " value", value)
     # check_realtime_action_data()
     download_realtime_stock_action(start_date, hashmod, value)

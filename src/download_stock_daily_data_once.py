@@ -232,12 +232,12 @@ if __name__ == '__main__':
     # print(time.strftime("%Y%m%d", time.localtime()))
     # today = datetime.datetime.now()
     # start_date = (today + datetime.timedelta(-2)).strftime("%Y%m%d")
-    # hashmod = sys.argv[1]
-    # value = sys.argv[2]
-    # start_date = sys.argv[3]
-    hashmod = 1
-    value = 0
-    start_date = '20200728'
+    hashmod = sys.argv[1]
+    value = sys.argv[2]
+    start_date = sys.argv[3]
+    #hashmod = 1
+    #value = 0
+    #start_date = '20200729'
     print("mod:", hashmod, " value", value, " start date", start_date)
     dowload_stock_daily(start_date, hashmod, value)
     print("Total cost:", time.time() - start_time)
