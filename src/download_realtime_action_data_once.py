@@ -287,7 +287,7 @@ if __name__ == '__main__':
     hashmod = sys.argv[1]
     value = sys.argv[2]
     start_date = sys.argv[3]
-    # start_time = time.time()
+    start_time = time.time()
     # hashmod = 1
     # value = 0
     # start_date = '20200729'
