@@ -117,23 +117,7 @@ def insert_daily_report_continue_high(trade_date=''):
 
 
 if __name__ == '__main__':
-    pass
-    insert_daily_report_up_down_detail('20200807')
-    # create_shareding_table()
-    # sharding_action_table(batch_size=10000, offset_pos=0)
     print('参数个数为:', len(sys.argv), '个参数。')
     print('参数列表:', str(sys.argv))
-    # hashmod = sys.argv[1]
-    # value = sys.argv[2]
-    # hashmod = 50
-    # value = 0
-    # start_sharding(int(hashmod), int(value))
-    # truncate_shareding_table()
-    # sql = """
-    #        (ts_code,trade_date,trade_time,price,price_change,volumn,value,kind)
-    #         values
-    #         ({0},%s,%s,%s,  %s,%s,%s,%s );
-    #     """
-    # sql = sql.format(1, 2, 3, 4, 5, 6, 7, 8)
-    # print(sql)
-    # sharding_action_table()
+    start_date = sys.argv[1]
+    insert_daily_report_up_down_detail(start_date)

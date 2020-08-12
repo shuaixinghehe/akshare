@@ -131,7 +131,6 @@ class DailyIndustryReport:
         input_data = web.input()
         print('input data', input_data)
         data = mydb.get_industry_report(input_data.trade_date, input_data.industry)
-        print(data)
         # for item in data:
         #     print(item)
         return render.daily_industry_report(input_data.trade_date, data)

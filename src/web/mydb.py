@@ -25,12 +25,13 @@ def get_stock_list(trade_date):
 def get_industry_report(trade_date, industry):
     return db_tushare.query("""
         select 
-    T1.ts_code,T1.name,T2.*
+    T1.ts_code,T1.name,T2.*,T3.pct_chg
 from 
 (
-    select *
+    select ts_code,name
     from stock_basic
     where dt='{}' and industry='{}'
+    group by ts_code,name
 )T1
 join
 (
@@ -38,9 +39,16 @@ join
     from stock_daily_basic
     where trade_date='{}' 
 )T2 on (T1.ts_code=T2.ts_code)
+join
+(
+    select ts_code,pct_chg
+    from stock_daily
+    where trade_date='{}'
+    group by ts_code,pct_chg 
+)T3 on (T1.ts_code=T3.ts_code)
 order by cast(total_mv as SIGNED)  desc 
 limit 10000;
-    """.format(trade_date, industry, trade_date))
+    """.format(trade_date, industry, trade_date, trade_date))
 
 
 def get_stock_name(trade_date):
