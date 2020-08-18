@@ -46,6 +46,7 @@ def insert_daily_report_up_down_detail(trade_date=''):
     result = ts_cur.fetchall()
     if len(result) != 0:
         pass
+        print("already download ", trade_date)
     else:
         print("select is null, insert into tushare.stock_daily_report_basic   ")
         ofile_sql_templaet = open('./stock_daily_report_up_down_detail_template.sql', 'r')
