@@ -14,7 +14,8 @@ urls = (
     '/daily_high_report_(.*)', 'DailyHighReport',
     '/daily_industry_report', 'DailyIndustryReport',
     '/daily_change_aggr_report', 'DailyChangeAggrReport',
-    '/daily_top_inst_report', 'DailyTopInstReport'
+    '/daily_top_inst_report', 'DailyTopInstReport',
+    '/data_check_report', 'DataCheckReport'
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'),
@@ -25,6 +26,11 @@ t_globals = {
     'session': session,
 }
 render = web.template.render('templates/', globals=t_globals)
+
+
+class DataCheckReport:
+    def GET(self):
+        pass
 
 
 class DailyTopInstReport:
