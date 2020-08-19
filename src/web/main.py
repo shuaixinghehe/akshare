@@ -1,12 +1,10 @@
 #! /usr/bin/env python
 # *-* coding:utf-8 *-*
-import random
-import time
-import json
-import web
 import datetime
+import json
 
 import mydb
+import web
 
 urls = (
     '/check(.*)', 'Check',
@@ -31,6 +29,21 @@ render = web.template.render('templates/', globals=t_globals)
 class DataCheckReport:
     def GET(self):
         pass
+        # 需要检查的表名，检查的sql，个数,检查最近5天
+        # db存储需要查询的表名，对应的sql结果，比如 tushare.stock_daily , select dt,count(1) cnt from tushare.stock_daily where dt>='{}' group by dt order by dt desc ;
+        # create table if not exsits tushare.check_data_report (
+        # )
+        input_data = web.input()
+        trade_date = input_data.trade_date
+        check_data_report_map = {}  # key=table_name, value=list
+        data = mydb.get_check_data_report()
+        for item in data:
+            table_name = item['table_name']
+            print('table name', item['table_name'], item['detail'])
+            cnt_data = mydb.get_tushare_query(item['detail'])
+            check_data_report_map[table_name] = cnt_data
+
+        print("check_data_report_map", check_data_report_map)
 
 
 class DailyTopInstReport:

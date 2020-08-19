@@ -14,12 +14,20 @@ def get_stock_detail(ts_code, trade_date):
     return db_tushare.select('stock_daily', where='ts_code=$ts_code and trade_date=$trade_date', vars=locals())
 
 
+def get_tushare_query(sql=""):
+    return db_tushare.query(sql)
+
+
 def get_stock_daily(trade_date):
     return db_tushare.select('stock_daily', where='trade_date=$trade_date', vars=locals())
 
 
 def get_stock_list(trade_date):
     return db_tushare.select('stock_daily', where='trade_date=$trade_date', vars=locals())
+
+
+def get_check_data_report():
+    return db_tushare.select('check_data_report', vars=locals())
 
 
 def get_industry_report(trade_date, industry):

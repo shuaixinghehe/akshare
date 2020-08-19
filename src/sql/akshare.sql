@@ -29,6 +29,13 @@ CREATE TABLE `stock_realtime_action` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
 
 
+--- 检查数据表
+CREATE TABLE if not exists `check_data_report` (
+  `table_name` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `detail` LONGTEXT COLLATE utf8mb4_bin DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+
+
 
 
 
