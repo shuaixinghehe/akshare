@@ -1,0 +1,31 @@
+$def with(check_data_report_map,trade_date_list)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>check</title>
+</head>
+<body>
+<table>
+    <tr>
+        <th>表名</th>
+        <th>日期</th>
+        <th>数量</th>
+    </tr>
+    $for key in check_data_report_map.keys():
+        $for trade_date in trade_date_list:
+            <tr>
+                <td>
+                $key
+                </td>
+                <td>
+                $trade_date
+                </td>
+                $if trade_date in check_data_report_map[key].keys() and len(check_data_report_map[key][trade_date].keys())>0 and 'cnt' in check_data_report_map[key][trade_date].keys():
+                    <td>$check_data_report_map[key][trade_date]['cnt']</td>
+                $else:
+                    <td style="color:red">0</td>
+            </tr>
+</table>
+</body>
+</html>

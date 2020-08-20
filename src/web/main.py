@@ -37,13 +37,29 @@ class DataCheckReport:
         trade_date = input_data.trade_date
         check_data_report_map = {}  # key=table_name, value=list
         data = mydb.get_check_data_report()
+        trade_date_list = []
         for item in data:
             table_name = item['table_name']
             print('table name', item['table_name'], item['detail'])
-            cnt_data = mydb.get_tushare_query(item['detail'])
-            check_data_report_map[table_name] = cnt_data
-
+            sql = str(item['detail']).format(trade_date)
+            cnt_data = mydb.get_tushare_query(sql)
+            check_data_report_map[table_name] = {}
+            for cnt_item in cnt_data:
+                if cnt_item['trade_date'] not in trade_date_list:
+                    trade_date_list.append(cnt_item['trade_date'])
+                if 'trade_date' not in check_data_report_map[table_name].keys():
+                    check_data_report_map[table_name][cnt_item['trade_date']] = {}
+                check_data_report_map[table_name][cnt_item['trade_date']]['trade_date'] = cnt_item['trade_date']
+                check_data_report_map[table_name][cnt_item['trade_date']]['cnt'] = cnt_item['cnt']
+        trade_date_list = sorted(trade_date_list)
         print("check_data_report_map", check_data_report_map)
+        for key in check_data_report_map.keys():
+            print("key", check_data_report_map[key])
+            print("key", len(check_data_report_map[key]))
+            # for item in check_data_report_map[key]:
+            #     print("cnt_data", item['trade_date'], item['cnt'])
+        print(check_data_report_map, trade_date_list)
+        return render.check_data_report(check_data_report_map, trade_date_list)
 
 
 class DailyTopInstReport:

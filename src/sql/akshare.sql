@@ -38,6 +38,67 @@ CREATE TABLE if not exists `check_data_report` (
 
 
 
+insert into check_data_report (table_name,detail) values (
+    "stock_basic",
+    "select trade_date,count(1) cnt from tushare.stock_daily where trade_date>='{}' group by trade_date;"
+);
+
+insert into check_data_report (table_name,detail) values (
+    "index_daily",
+    "select trade_date,count(1) cnt from tushare.index_daily where trade_date>='{}' group by trade_date;"
+);
+
+
+insert into check_data_report (table_name,detail) values (
+    "money_flow",
+    "select trade_date,count(1) cnt from tushare.money_flow where trade_date>='{}' group by trade_date;"
+);
+
+insert into check_data_report (table_name,detail) values (
+    "realtime_action_detail_basic",
+    "select trade_date,count(1) cnt from tushare.realtime_action_detail_basic where trade_date>='{}' group by trade_date;"
+);
+
+insert into check_data_report (table_name,detail) values (
+    "stock_daily",
+    "select trade_date,count(1) cnt from tushare.stock_daily where trade_date>='{}' group by trade_date;"
+);
+
+insert into check_data_report (table_name,detail) values (
+    "stock_daily_basic",
+    "select trade_date,count(1) cnt from tushare.stock_daily_basic where trade_date>='{}' group by trade_date;"
+);
+
+
+insert into check_data_report (table_name,detail) values (
+    "stock_daily_report_basic",
+    "select trade_date,count(1) cnt from tushare.stock_daily_report_basic where trade_date>='{}' group by trade_date;"
+);
+
+insert into check_data_report (table_name,detail) values (
+    "top_inst",
+    "select trade_date,count(1) cnt from tushare.top_inst where trade_date>='{}' group by trade_date;"
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
