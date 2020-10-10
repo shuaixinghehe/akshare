@@ -45,7 +45,7 @@ class DataCheckReport:
             cnt_data = mydb.get_tushare_query(sql)
             check_data_report_map[table_name] = {}
             for cnt_item in cnt_data:
-                if cnt_item['trade_date'] not in trade_date_list:
+                if cnt_item['trade_date'] not in trade_date_list and table_name == 'stock_daily':
                     trade_date_list.append(cnt_item['trade_date'])
                 if 'trade_date' not in check_data_report_map[table_name].keys():
                     check_data_report_map[table_name][cnt_item['trade_date']] = {}

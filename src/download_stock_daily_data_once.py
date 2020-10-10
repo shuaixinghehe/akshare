@@ -36,7 +36,10 @@ def ts_code_2_ak_code(ts_code):
 
 @time_out(20, timeout_callback)
 def stock_zh_a_daily_timeout(symbol, adjust):
-    return ak.stock_zh_a_daily(symbol=symbol, adjust=adjust)
+    if int(time.time()) % 2 ==0:
+        return ak.stock_zh_kcb_daily(symbol=symbol, adjust=adjust)
+    else:
+        return ak.stock_zh_a_daily(symbol=symbol, adjust=adjust)
 
 
 def history_stock_daily(ts_code='', adjust="", trade_date=''):

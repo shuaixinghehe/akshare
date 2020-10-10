@@ -198,13 +198,14 @@ def download_realtime_stock_action(trade_date, hashmod, value):
         download_num += 1
         if abs(hash(code)) % int(hashmod) != int(value):
             continue
-        print("process ", download_num * 1.0 / len(code_list), " ",
-              download_num, " download_realtime_stock_action ", code,
-              " hash(code)", hash(code), " mod", hashmod, " value", value)
+
         start_time = time.time()
         # 增加查重，如果已经存入到mysql里面了 就不再插入
         if not is_download_realtime_stock_action(trade_date, code):
             r = realtime_stock_detail(code, trade_date)
+            print("process ", download_num * 1.0 / len(code_list), " ",
+                  download_num, " download_realtime_stock_action ", code,
+                  " hash(code)", hash(code), " mod", hashmod, " value", value)
             if r is not None:
                 print("download ts_code ", code, " total cost:", str(time.time() - start_time))
         # print("download_realtime_stock_action " + code + " cost" + str(time.time() - start_time))
