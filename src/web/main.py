@@ -56,7 +56,8 @@ class DataEchartAdminSkill:
                  float(item['close']), float(item['low']),
                  float(item['high']), int(float(item['vol']) * 1000)])
         print("result_list", result_list)
-        return render.admin_stock_echart_skill(json.dumps(result_list))
+        print("result json", json.dumps(result_list, ensure_ascii=False))
+        return render.admin_stock_echart_skill(json.dumps(result_list, ensure_ascii=False))
 
 
 class DataCheckReport:
