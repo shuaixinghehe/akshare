@@ -52,7 +52,7 @@ class DataEchartAdminSkill:
         for item in stock_daily_history_data:
             print('trade_date', item['trade_date'], 'high', item['open'])
             result_list.append(
-                [str(item['trade_date']), float(item['open']),
+                [item['trade_date'], float(item['open']),
                  float(item['close']), float(item['low']),
                  float(item['high']), int(float(item['vol']) * 1000)])
         print("result_list", result_list)
