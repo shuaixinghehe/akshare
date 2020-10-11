@@ -2,10 +2,10 @@
 # *-* coding:utf-8 *-*
 import datetime
 import json
+import random
 
 import mydb
 import web
-import random
 
 urls = (
     '/check(.*)', 'Check',
@@ -28,11 +28,13 @@ t_globals = {
 }
 render = web.template.render('templates/', globals=t_globals)
 
+
 class DataJsEchartDemo:
     def GET(self):
         # 数据格式 Date,Open,Close,Lowest,Highest
         print("DataJsEchartDemo")
         return render.data_js_echart_demo()
+
 
 class DataEchartAdminSkill:
     def GET(self):
@@ -42,14 +44,18 @@ class DataEchartAdminSkill:
         ts_code_list = []
         for item in ts_code_list_data:
             ts_code_list.append(item['ts_code'])
-        #print("ts_code_list_data lenth", len(ts_code_list), ts_code_list)
-        selected_ts_code = ts_code_list[random.randint(0,len(ts_code_list))]
+        # print("ts_code_list_data lenth", len(ts_code_list), ts_code_list)
+        selected_ts_code = ts_code_list[random.randint(0, len(ts_code_list))]
         print("selected ts_code", selected_ts_code)
-        stock_daily_history_data = mydb.get_stock_daily_history(back_trade_date,selected_ts_code)
+        stock_daily_history_data = mydb.get_stock_daily_history(back_trade_date, selected_ts_code)
+        result_list = []
         for item in stock_daily_history_data:
-            print('trade_date',item['trade_date'],'high',item['open'])
-        return render.data_js_echart_demo()
-
+            print('trade_date', item['trade_date'], 'high', item['open'])
+            result_list.append(
+                [str(item['trade_date']), float(item['open']),
+                 float(item['close']), float(item['low']),
+                 float(item['high']), int(float(item['vol']) * 1000)])
+        return render.admin_stock_echart_skill(json.dumps(result_list))
 
 
 class DataCheckReport:
