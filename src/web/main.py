@@ -55,6 +55,7 @@ class DataEchartAdminSkill:
                 [str(item['trade_date']), float(item['open']),
                  float(item['close']), float(item['low']),
                  float(item['high']), int(float(item['vol']) * 1000)])
+        print("result_list", result_list)
         return render.admin_stock_echart_skill(json.dumps(result_list))
 
 
