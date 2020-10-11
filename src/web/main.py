@@ -5,6 +5,7 @@ import json
 
 import mydb
 import web
+import random
 
 urls = (
     '/check(.*)', 'Check',
@@ -13,7 +14,9 @@ urls = (
     '/daily_industry_report', 'DailyIndustryReport',
     '/daily_change_aggr_report', 'DailyChangeAggrReport',
     '/daily_top_inst_report', 'DailyTopInstReport',
-    '/data_check_report', 'DataCheckReport'
+    '/data_check_report', 'DataCheckReport',
+    '/data_js_echart_demo', 'DataJsEchartDemo',
+    '/data_echart_admin_skill', 'DataEchartAdminSkill'
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'),
@@ -24,6 +27,29 @@ t_globals = {
     'session': session,
 }
 render = web.template.render('templates/', globals=t_globals)
+
+class DataJsEchartDemo:
+    def GET(self):
+        # 数据格式 Date,Open,Close,Lowest,Highest
+        print("DataJsEchartDemo")
+        return render.data_js_echart_demo()
+
+class DataEchartAdminSkill:
+    def GET(self):
+        today_date_time = datetime.datetime.now()
+        back_trade_date = (today_date_time + datetime.timedelta(-360)).strftime("%Y%m%d")
+        ts_code_list_data = mydb.get_stock_code(back_trade_date)
+        ts_code_list = []
+        for item in ts_code_list_data:
+            ts_code_list.append(item['ts_code'])
+        #print("ts_code_list_data lenth", len(ts_code_list), ts_code_list)
+        selected_ts_code = ts_code_list[random.randint(0,len(ts_code_list))]
+        print("selected ts_code", selected_ts_code)
+        stock_daily_history_data = mydb.get_stock_daily_history(back_trade_date,selected_ts_code)
+        for item in stock_daily_history_data:
+            print('trade_date',item['trade_date'],'high',item['open'])
+        return render.data_js_echart_demo()
+
 
 
 class DataCheckReport:
