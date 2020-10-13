@@ -269,16 +269,6 @@ function calculateMA(dayCount, data) {
         ]
     }, true);
 
-    myChart.dispatchAction({
-        type: 'brush',
-        areas: [
-            {
-                brushType: 'lineX',
-                coordRange: ['2016-06-02', '2016-06-20'],
-                xAxisIndex: 0
-            }
-        ]
-    });
 if (option && typeof option === "object") {
     myChart.setOption(option, true);
 }
