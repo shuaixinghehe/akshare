@@ -55,14 +55,20 @@ class DataEchartAdminSkill:
                 [item['trade_date'], float(item['open']),
                  float(item['close']), float(item['low']),
                  float(item['high']), int(float(item['vol']) * 1000)])
-        random_index = random.randint(0, len(result_list))
-        
-        # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
-         
-        print("result_list", result_list)
-        print("result json", json.dumps(result_list, ensure_ascii=False))
-        return render.admin_stock_echart_skill(json.dumps(result_list, ensure_ascii=False),selected_ts_code)
 
+        # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
+        print("result_list", result_list)
+        result_list = self.get_random_stock_daily(result_list)
+        print("result json", json.dumps(result_list, ensure_ascii=False))
+        return render.admin_stock_echart_skill(json.dumps(result_list, ensure_ascii=False), selected_ts_code)
+
+    def get_random_stock_daily(self, result_list):
+        pass
+        if len(result_list) <= 100:
+            return result_list
+        else:
+            random_index = random.randint(0, len(result_list) - 100)
+            return result_list[random_index:random_index + 100]
 
 
 class DataCheckReport:
