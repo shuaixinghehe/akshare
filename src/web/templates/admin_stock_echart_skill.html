@@ -1,11 +1,12 @@
-$def with(stock_daily_list)
+$def with(stock_daily_list,selected_ts_code)
 <!DOCTYPE html>
 <html style="height: 100%">
    <head>
        <meta charset="utf-8">
    </head>
    <body style="height: 100%; margin: 0">
-       <div id="container" style="height: 100%"></div>
+       <div id="container" style="height: 80%"></div>
+       <div>$selected_ts_code</div> 
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
