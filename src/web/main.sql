@@ -4,6 +4,20 @@ create TABLE `stock_daily_report_basic` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 
+create TABLE `submit_admin_skill_answer_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `ts_code` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `start_trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `end_trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `predict_trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `fact` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `user_answer` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `result` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `detail` LONGTEXT COLLATE utf8mb4_bin DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+
 --- 多少涨的股票，多少跌的股票，多少平的股票
 
 select
