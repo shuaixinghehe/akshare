@@ -14,8 +14,9 @@ create TABLE `submit_admin_skill_answer_log` (
   `fact` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `user_answer` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `result` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-  `detail` LONGTEXT COLLATE utf8mb4_bin DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+  `detail` LONGTEXT COLLATE utf8mb4_bin DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 
 --- 多少涨的股票，多少跌的股票，多少平的股票

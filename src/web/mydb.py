@@ -12,6 +12,11 @@ def get_model_reco_stock_detail(model_name):
     return data
 
 
+def get_admin_skill_user_id(user_id):
+    data = db_tushare.query('select count(1) as cnt from submit_admin_skill_answer_log where user_id={}'.format(user_id))
+    return data
+
+
 def get_stock_detail(ts_code, trade_date):
     return db_tushare.select('stock_daily', where='ts_code=$ts_code and trade_date=$trade_date', vars=locals())
 
@@ -23,8 +28,10 @@ def get_tushare_query(sql=""):
 def get_stock_daily(trade_date):
     return db_tushare.select('stock_daily', where='trade_date=$trade_date', vars=locals())
 
-def get_stock_daily_history(trade_date,ts_code):
-    return db_tushare.select('stock_daily', where='trade_date>=$trade_date and ts_code=$ts_code',order="trade_date", vars=locals())
+
+def get_stock_daily_history(trade_date, ts_code):
+    return db_tushare.select('stock_daily', where='trade_date>=$trade_date and ts_code=$ts_code', order="trade_date",
+                             vars=locals())
 
 
 def get_stock_list(trade_date):
@@ -67,10 +74,12 @@ limit 10000;
 def get_stock_name(trade_date):
     return db_tushare.select('stock_basic', where='dt=$trade_date', vars=locals())
 
+
 def get_stock_code(trade_date):
     return db_tushare.query(""" 
     select distinct ts_code from stock_daily where trade_date>={}
     """.format(trade_date))
+
 
 def get_stock_daily_basic(trade_date):
     return db_tushare.select('stock_daily_basic', where='trade_date=$trade_date', vars=locals())

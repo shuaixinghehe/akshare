@@ -12,9 +12,9 @@ urls = (
     '/daily_report_(.*)', 'DailyReport',
     '/daily_high_report_(.*)', 'DailyHighReport',
     '/daily_industry_report', 'DailyIndustryReport',
-    '/create_admin_skill_id', 'CreateAdminSkillId',#创建userId
-    '/submit_admin_skill_answer', 'SubmitAdminSkillAnswer', #提交结果
-    '/admin_skill_rank', 'AdminSkillRank', # 查询结果排行
+    '/create_admin_skill_id', 'CreateAdminSkillId',  # 创建userId
+    '/submit_admin_skill_answer', 'SubmitAdminSkillAnswer',  # 提交结果
+    '/admin_skill_rank', 'AdminSkillRank',  # 查询结果排行
     '/daily_change_aggr_report', 'DailyChangeAggrReport',
     '/daily_top_inst_report', 'DailyTopInstReport',
     '/data_check_report', 'DataCheckReport',
@@ -33,16 +33,31 @@ render = web.template.render('templates/', globals=t_globals)
 
 
 class CreateAdminSkillId:
-    def GET(self):
+    def POST(self):
         pass
+        input_data = web.input()
+        print(input_data.user_id)
+        data = mydb.get_admin_skill_user_id(input_data.user_id)
+        cnt = 0
+        for item in data:
+            cnt = item['cnt']
+
+        print("cnt", cnt)
+        if cnt is None or cnt == 0:
+            return json.dumps({"err_code": 1})
+        else:
+            return json.dumps({"err_code": 0})
         # 提交用户创建的userId，判断是否已经存在，查询用户提交结果表中的userId
         # 查询创建的ID是否满足需求 唯一性；返回结果
+
 
 class SubmitAdminSkillAnswer:
     def GET(self):
         pass
         # 提交用户id，ts_code, start_date,end_date,predict_date,
         # fact,user_answer,result
+
+
 class AdminSkillRank:
     def GET(self):
         pass
@@ -80,7 +95,8 @@ class DataEchartAdminSkill:
         print("result_list", result_list)
         result_list = self.get_random_stock_daily(result_list)
         print("result json", json.dumps(result_list, ensure_ascii=False))
-        return render.admin_stock_echart_skill(json.dumps(result_list[0:len(result_list)-2], ensure_ascii=False), selected_ts_code,result_list)
+        return render.admin_stock_echart_skill(json.dumps(result_list[0:len(result_list) - 2], ensure_ascii=False),
+                                               selected_ts_code, result_list)
 
     def get_random_stock_daily(self, result_list):
         pass

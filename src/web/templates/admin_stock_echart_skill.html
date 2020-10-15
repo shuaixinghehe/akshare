@@ -7,11 +7,12 @@ $def with(stock_daily_list,selected_ts_code,stock_daily_list_answer)
    <body style="height: 100%; margin: 0">
        <div id="container" style="height: 80%"></div>
        <div>$selected_ts_code</div>
-       <div>ID：<input type="text" value="创建ID开始比赛"></div>
+       <div>ID：<input type="text" value="" name="user_id" id="user_id"><input type="button" value="创建" onclick="createUserId()">创建ID后才可以开始</div>
        <div><input type="button" name="" value="涨"> <input type="button" name="" value="跌"></div>
        <div>涨定义：第二天的价格高于前一天的收盘价 </div>
        <div>跌定义：第二天的价格低于前一天的收盘价 </div>
        <div><input type="button" value="查看答案" onclick="answer()"> </div>
+       <script src="/static/JS/jquery1.9.js" type="text/javascript"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
@@ -248,6 +249,24 @@ function calculateMA(dayCount) {
         result.push(sum / dayCount);
     }
     return result;
+}
+
+function createUserId()
+{
+    var data = {
+            user_id:document.getElementById("user_id").value,
+    };
+        jQuery.post("/create_admin_skill_id",data,function(rtval){
+            if (rtval.err_code == 0)
+            {
+                var msg = "添加失败，userId 冲突";
+                alert(msg);
+            }
+            else{
+                alert("提交成功");
+            }
+        },"json");
+
 }
 
 function answer(){
