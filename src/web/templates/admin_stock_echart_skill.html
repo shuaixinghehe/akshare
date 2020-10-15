@@ -1,4 +1,4 @@
-$def with(stock_daily_list,selected_ts_code,stock_daily_list_answer)
+$def with(stock_daily_list,selected_ts_code,stock_daily_list_answer,server_params)
 <!DOCTYPE html>
 <html style="height: 100%">
    <head>
@@ -8,7 +8,7 @@ $def with(stock_daily_list,selected_ts_code,stock_daily_list_answer)
        <div id="container" style="height: 80%"></div>
        <div>$selected_ts_code</div>
        <div>ID：<input type="text" value="" name="user_id" id="user_id"><input type="button" value="创建" onclick="createUserId()">创建ID后才可以开始</div>
-       <div><input type="button" name="" value="涨"> <input type="button" name="" value="跌"></div>
+       <div><input type="button" name="" value="涨" onclick="submitAnswer()"> <input type="button" name="" value="跌" onclick="submitAnswer()"></div>
        <div>涨定义：第二天的价格高于前一天的收盘价 </div>
        <div>跌定义：第二天的价格低于前一天的收盘价 </div>
        <div><input type="button" value="查看答案" onclick="answer()"> </div>
@@ -22,7 +22,7 @@ $def with(stock_daily_list,selected_ts_code,stock_daily_list_answer)
        <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ZD7S9IuolEgKoOXzQ7pRrR65"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
        <script type="text/javascript">
-	       var dom = document.getElementById("container");
+	   var dom = document.getElementById("container");
            var myChart = echarts.init(dom);
            var app = {};
            option = null;
@@ -30,6 +30,7 @@ $def with(stock_daily_list,selected_ts_code,stock_daily_list_answer)
            var upBorderColor = '#8A0000';
            var downColor = '#00da3c';
            var downBorderColor = '#008F28';
+           var server_params_object = eval("(" +"$:server_params" +")");
            // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
            var data0 = splitData(
            $:stock_daily_list
@@ -251,8 +252,7 @@ function calculateMA(dayCount) {
     return result;
 }
 
-function createUserId()
-{
+function createUserId(){
     var data = {
             user_id:document.getElementById("user_id").value,
     };
@@ -267,6 +267,24 @@ function createUserId()
             }
         },"json");
 
+}
+
+function submitAnswer(){
+    var data = {
+            user_id:server_params_object.user_id,
+            ts_code:server_params_object.ts_code,
+            start_trade_date:server_params_object.start_trade_date,
+    };
+        jQuery.post("/submit_admin_skill_answer",data,function(rtval){
+            if (rtval.err_code == 0)
+            {
+                var msg = "添加失败，userId 冲突";
+                alert(msg);
+            }
+            else{
+                alert("提交成功");
+            }
+        },"json");
 }
 
 function answer(){

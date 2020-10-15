@@ -1,4 +1,4 @@
-create TABLE `stock_daily_report_basic` (
+areate TABLE `stock_daily_report_basic` (
   `trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `detail` LONGTEXT COLLATE utf8mb4_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -13,7 +13,7 @@ create TABLE `submit_admin_skill_answer_log` (
   `predict_trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `fact` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `user_answer` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-  `result` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `result` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL, -- 0:结果错误，1 结果正确
   `detail` LONGTEXT COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;

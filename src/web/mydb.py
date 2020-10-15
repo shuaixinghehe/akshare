@@ -11,9 +11,19 @@ def get_model_reco_stock_detail(model_name):
     data = db_akshare.select('model_reco_stock_detail', where='model_name=$model_name', vars=locals())
     return data
 
+def insert_admin_skill_answer_log(user_id,ts_code,start_trade_date,end_trade_date,predict_trade_date,fact,user_answer,result,detail):
+    data = db_tushare.insert('submit_admin_skill_answer_log',
+                            user_id=user_id,ts_code=ts_code,start_trade_date=start_trade_date, 
+                            end_trade_date=end_trade_date, predict_trade_date=predict_trade_date,
+                            fact=fact,user_answer=user_answer,result=result,detail=detail,vars=locals())
+
 
 def get_admin_skill_user_id(user_id):
     data = db_tushare.query('select count(1) as cnt from submit_admin_skill_answer_log where user_id={}'.format(user_id))
+    return data
+
+def get_admin_skill_user_rank():
+    data = db_tushare.query('select user_id,sum(result) as score from submit_admin_skill_answer_log group by user_id order by score desc ')
     return data
 
 
