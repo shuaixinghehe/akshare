@@ -11,20 +11,29 @@ def get_model_reco_stock_detail(model_name):
     data = db_akshare.select('model_reco_stock_detail', where='model_name=$model_name', vars=locals())
     return data
 
-def insert_admin_skill_answer_log(user_id,ts_code,start_trade_date,end_trade_date,predict_trade_date,fact,user_answer,result,detail):
+
+def insert_admin_skill_answer_log(user_id, ts_code, start_trade_date, end_trade_date, predict_trade_date, fact,
+                                  user_answer, result, detail):
     data = db_tushare.insert('submit_admin_skill_answer_log',
-                            user_id=user_id,ts_code=ts_code,start_trade_date=start_trade_date, 
-                            end_trade_date=end_trade_date, predict_trade_date=predict_trade_date,
-                            fact=fact,user_answer=user_answer,result=result,detail=detail,vars=locals())
+                             user_id=user_id, ts_code=ts_code, start_trade_date=start_trade_date,
+                             end_trade_date=end_trade_date, predict_trade_date=predict_trade_date,
+                             fact=fact, user_answer=user_answer, result=result, detail=detail)
 
 
 def get_admin_skill_user_id(user_id):
-    data = db_tushare.query('select count(1) as cnt from submit_admin_skill_answer_log where user_id={}'.format(user_id))
+    data = db_tushare.query("""select count(1) as cnt 
+            from submit_admin_skill_answer_log where user_id='{}'""".format(user_id))
     return data
 
+
 def get_admin_skill_user_rank():
-    data = db_tushare.query('select user_id,sum(result) as score from submit_admin_skill_answer_log group by user_id order by score desc ')
+    data = db_tushare.query(
+        'select user_id,sum(result) as score from submit_admin_skill_answer_log group by user_id order by score desc ')
     return data
+
+
+def get_admin_skill_rank():
+    pass
 
 
 def get_stock_detail(ts_code, trade_date):
@@ -39,16 +48,40 @@ def get_stock_daily(trade_date):
     return db_tushare.select('stock_daily', where='trade_date=$trade_date', vars=locals())
 
 
+def get_answer_log_score_by_user_id(user_id=""):
+    if user_id == "":
+        return db_tushare.query("""
+        select user_id,count(1) cnt, sum(result) score 
+        from submit_admin_skill_answer_log 
+        group by user_id;
+        """)
+    else:
+        return db_tushare.query("""
+        select user_id,count(1) cnt, sum(result) score 
+        from submit_admin_skill_answer_log 
+        where user_id='{}'
+        group by user_id;
+        """.format(user_id))
+
+
 def get_stock_daily_history(trade_date, ts_code):
-    return db_tushare.select('stock_daily', where='trade_date>=$trade_date and ts_code=$ts_code', order="trade_date",
-                             vars=locals())
+    data = db_tushare.query("""
+        select ts_code,trade_date,open,high,low,close,vol 
+        from stock_daily 
+        where trade_date>='{}' and ts_code='{}' 
+        group by ts_code,trade_date,open,high,low,close,vol 
+        order by trade_date
+        """.format(trade_date, ts_code))
+    return data
 
 
 def get_stock_list(trade_date):
     return db_tushare.select('stock_daily', where='trade_date=$trade_date', vars=locals())
 
 
+#
 def get_check_data_report():
+    # 获取需要检查的表名称
     return db_tushare.select('check_data_report', vars=locals())
 
 
@@ -83,6 +116,11 @@ limit 10000;
 
 def get_stock_name(trade_date):
     return db_tushare.select('stock_basic', where='dt=$trade_date', vars=locals())
+
+
+def get_stock_trade_list(trade_date):
+    return db_tushare.query("select distinct trade_date from stock_daily " +
+                            "where trade_date>='{}' order by trade_date desc".format(trade_date))
 
 
 def get_stock_code(trade_date):

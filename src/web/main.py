@@ -6,6 +6,7 @@ import random
 
 import mydb
 import web
+import string
 
 urls = (
     '/check(.*)', 'Check',
@@ -15,6 +16,7 @@ urls = (
     '/create_admin_skill_id', 'CreateAdminSkillId',  # 创建userId
     '/submit_admin_skill_answer', 'SubmitAdminSkillAnswer',  # 提交结果
     '/admin_skill_rank', 'AdminSkillRank',  # 查询结果排行
+    '/next_admin_skill_question', 'NextAdminSkillQuestion',  # 查询结果排行
     '/daily_change_aggr_report', 'DailyChangeAggrReport',
     '/daily_top_inst_report', 'DailyTopInstReport',
     '/data_check_report', 'DataCheckReport',
@@ -32,23 +34,82 @@ t_globals = {
 render = web.template.render('templates/', globals=t_globals)
 
 
+class NextAdminSkillQuestion:
+    def POST(self):
+        input_data = web.input()
+        #  获取下一个预测的stock信息
+        # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
+        result_list, selected_ts_code = get_admin_skill_stocks()
+        print("result_list", result_list)
+        result_list = get_random_stock_daily(result_list)
+        print("result json", json.dumps(result_list, ensure_ascii=False))
+        start_trade_date = result_list[0][0]
+        end_trade_date = result_list[len(result_list) - 2][0]
+        predict_trade_date = result_list[len(result_list) - 1][0]
+        fact = result_list[len(result_list) - 1][4] > result_list[len(result_list) - 2][2] * 1.01
+        params = {
+            "user_id": input_data.user_id,
+            "ts_code": selected_ts_code,
+            "start_trade_date": start_trade_date,
+            "end_trade_date": end_trade_date,
+            "predict_trade_date": predict_trade_date,
+            "fact": str(fact),
+            "before_close": result_list[len(result_list) - 2][2],
+            "today_high": result_list[len(result_list) - 1][4],
+            "process": "(1/50)"
+        }
+        print("params", params)
+        return json.dumps({
+            "err_code": 1,
+            "stock_daily_list": result_list[0:len(result_list) - 1],
+            "selected_ts_code": selected_ts_code,
+            "result_list": result_list,
+            "params": params
+        })
+
+
 class CreateAdminSkillId:
     def POST(self):
         pass
         input_data = web.input()
         print(input_data.user_id)
-        data = mydb.get_admin_skill_user_id(input_data.user_id)
-        cnt = 0
-        for item in data:
-            cnt = item['cnt']
 
-        print("cnt", cnt)
-        if cnt is None or cnt == 0:
-            return json.dumps({"err_code": 1})
+        user_id, cnt = get_and_check_user_id(input_data.user_id)
+
+        err_code = 1
+        # 1:表示新的userId，2：表示旧userId 3：表示新生成的userId
+
+        if cnt == 0:
+            err_code = 1
+        elif cnt < 50:
+            err_code = 2
         else:
-            return json.dumps({"err_code": 0})
+            err_code = 3
+
+        return json.dumps({
+            "err_code": err_code,
+            "process": "(" + str(int(cnt) % 50) + "/50)",
+            "user_id": user_id
+        })
         # 提交用户创建的userId，判断是否已经存在，查询用户提交结果表中的userId
         # 查询创建的ID是否满足需求 唯一性；返回结果
+
+
+def get_and_check_user_id(user_id):
+    pass
+    data = mydb.get_admin_skill_user_id(user_id)
+    cnt = 0
+    for item in data:
+        cnt = item['cnt']
+
+    if cnt == 0:
+        user_id = user_id  # 如果之前不存在，则返回这次userId
+    elif cnt < 50:
+        user_id = user_id  # 如果之前存在 userId 但是次数没有满50 ，则使用之前的id 继续答题
+    else:
+        user_id = user_id + '_' + ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 6))
+
+    return user_id, cnt
 
 
 class SubmitAdminSkillAnswer:
@@ -57,25 +118,77 @@ class SubmitAdminSkillAnswer:
         # 提交用户id，ts_code, start_date,end_date,predict_date,
         # fact,user_answer,result
         input_data = web.input()
-        print("input_data",input_data)
-        #mydb.insert_admin_skill_answer_log(
-        #    input_data.user_id,
-        #    input_data.ts_code,
-        #    input_data.start_trade_date,
-        #    input_data.end_trade_date,
-        #    input_data.predict_trade_date,
-        #    input_data.fact,
-        #    input_data.user_answer,
-        #    input_data.result,
-        #    input_data.detail
-        #)
+
+        # 1. 检查userId 是否是第一次出现，如果第一次出现，继续执行，
+        #  如果是之前数据里面存储，则查询出现的次数，如果满足50个，则
+        #  重新创建一个随机的userId，使用继续使用
+        # 
+        user_id, cnt = get_and_check_user_id(input_data.user_id)
+
+        print("input_data", input_data)
+        mydb.insert_admin_skill_answer_log(
+            user_id,
+            input_data.ts_code,
+            input_data.start_trade_date,
+            input_data.end_trade_date,
+            input_data.predict_trade_date,
+            input_data.fact,
+            input_data.user_answer,
+            input_data.result,
+            input_data.detail
+        )
+
+        data = mydb.get_admin_skill_user_id(user_id)
+        cnt = 0
+        for item in data:
+            cnt = item['cnt']
+
         #  获取下一个预测的stock信息
-         
+        # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
+        # result_list,selected_ts_code = get_admin_skill_stocks()
+        # print("result_list", result_list)
+        # result_list = get_random_stock_daily(result_list)
+        # print("result json", json.dumps(result_list, ensure_ascii=False))
+        # start_trade_date=result_list[0][0]
+        # end_trade_date=result_list[len(result_list) - 2][0]
+        # predict_trade_date=result_list[len(result_list)-1][0]
+        # fact = result_list[len(result_list)-1][4] > result_list[len(result_list)-2][2] * 1.01
+        # params = {
+        #        "user_id":input_data.user_id,
+        #        "ts_code":selected_ts_code,
+        #        "start_trade_date":start_trade_date,
+        #        "end_trade_date": end_trade_date,
+        #        "predict_trade_date":predict_trade_date,
+        #        "fact":str(fact),
+        #        "process":"(1/50)"
+        # }
+        # print("params",params)
+        err_code = 1
+        if cnt == 0:
+            err_code = 1
+        elif cnt <= 50:
+            err_code = 2
+        else:
+            err_code = 3
+
+        return_result = json.dumps({
+            "err_code": err_code,  # 1:表示新的userId，2：表示旧userId 3：表示新生成的userId
+            "process": "(" + str(cnt) + "/50)",
+            "user_id": user_id
+            # "stock_daily_list":result_list[0:len(result_list) - 2],
+            # "selected_ts_code":selected_ts_code,
+            # "result_list":result_list,
+            # "params":params
+        })
+        print(return_result)
+        return return_result
 
 
 class AdminSkillRank:
     def GET(self):
         pass
+        data = mydb.get_answer_log_score_by_user_id()
+        return render.admin_skill_log_rank(data)
         # 读取用户提交表，统计每个用户的得分
 
 
@@ -89,30 +202,33 @@ class DataJsEchartDemo:
 class DataEchartAdminSkill:
     def GET(self):
         # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
-        result_list,selected_ts_code = get_admin_skill_stocks()
+        result_list, selected_ts_code = get_admin_skill_stocks()
         print("result_list", result_list)
         result_list = get_random_stock_daily(result_list)
         print("result json", json.dumps(result_list, ensure_ascii=False))
-        start_trade_date=result_list[0][0]
-        end_trade_date=result_list[len(result_list) - 2][0]
-        predict_trade_date=result_list[len(result_list)-1][0]
-        fact = result_list[len(result_list)-1][4] > result_list[len(result_list)-2][2] * 1.01
+        start_trade_date = result_list[0][0]
+        end_trade_date = result_list[len(result_list) - 2][0]
+        predict_trade_date = result_list[len(result_list) - 1][0]
+        fact = result_list[len(result_list) - 1][4] > result_list[len(result_list) - 2][2] * 1.01
         params = {
-                "user_id":"",
-                "ts_code":selected_ts_code,
-                "start_trade_date":start_trade_date,
-                "end_trade_date": end_trade_date,
-                "predict_trade_date":predict_trade_date,
-                "fact":str(fact),
-                "process":"(1/50)"
+            "user_id": "",
+            "ts_code": selected_ts_code,
+            "start_trade_date": start_trade_date,
+            "end_trade_date": end_trade_date,
+            "predict_trade_date": predict_trade_date,
+            "fact": str(fact),
+            "before_close": result_list[len(result_list) - 2][2],
+            "today_high": result_list[len(result_list) - 1][4],
+            "process": "(1/50)"
         }
-        print("params",params)
+        print("params", params)
         return render.admin_stock_echart_skill(
-               json.dumps(result_list[0:len(result_list) - 2], ensure_ascii=False),
-               selected_ts_code,
-               result_list,
-               params
-               )
+            json.dumps(result_list[0:len(result_list) - 1], ensure_ascii=False),
+            selected_ts_code,
+            result_list,
+            params
+        )
+
 
 def get_random_stock_daily(result_list):
     pass
@@ -122,28 +238,29 @@ def get_random_stock_daily(result_list):
         random_index = random.randint(0, len(result_list) - 100)
         return result_list[random_index:random_index + 100]
 
-def get_admin_skill_stocks():
-   today_date_time = datetime.datetime.now()
-   back_trade_date = (today_date_time + datetime.timedelta(-360)).strftime("%Y%m%d")
-   ts_code_list_data = mydb.get_stock_code(back_trade_date)
-   ts_code_list = []
-   for item in ts_code_list_data:
-       ts_code_list.append(item['ts_code'])
-   # print("ts_code_list_data lenth", len(ts_code_list), ts_code_list)
-   selected_ts_code = ts_code_list[random.randint(0, len(ts_code_list))]
-   print("selected ts_code", selected_ts_code)
-   stock_daily_history_data = mydb.get_stock_daily_history(back_trade_date, selected_ts_code)
-   result_list = []
-   for item in stock_daily_history_data:
-       #print('trade_date', item['trade_date'], 'high', item['open'])
-       result_list.append(
-           [item['trade_date'], float(item['open']),
-            float(item['close']), float(item['low']),
-            float(item['high']), int(float(item['vol']) * 1000)])
 
-   # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
-   #print("result_list", result_list)
-   return result_list,selected_ts_code
+def get_admin_skill_stocks():
+    today_date_time = datetime.datetime.now()
+    back_trade_date = (today_date_time + datetime.timedelta(-360)).strftime("%Y%m%d")
+    ts_code_list_data = mydb.get_stock_code(back_trade_date)
+    ts_code_list = []
+    for item in ts_code_list_data:
+        ts_code_list.append(item['ts_code'])
+    # print("ts_code_list_data lenth", len(ts_code_list), ts_code_list)
+    selected_ts_code = ts_code_list[random.randint(0, len(ts_code_list))]
+    print("selected ts_code", selected_ts_code)
+    stock_daily_history_data = mydb.get_stock_daily_history(back_trade_date, selected_ts_code)
+    result_list = []
+    for item in stock_daily_history_data:
+        # print('trade_date', item['trade_date'], 'high', item['open'])
+        result_list.append(
+            [item['trade_date'], float(item['open']),
+             float(item['close']), float(item['low']),
+             float(item['high']), int(float(item['vol']) * 1000)])
+
+    # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
+    # print("result_list", result_list)
+    return result_list, selected_ts_code
 
 
 class DataCheckReport:
@@ -202,10 +319,20 @@ class DailyChangeAggrReport:
         input_data = web.input()
         trade_date = input_data.trade_date
         back_trade_date = datetime.datetime.strptime(trade_date, '%Y%m%d')
+        check_trade_date = (back_trade_date + datetime.timedelta(-90)).strftime("%Y%m%d")
+        data = mydb.get_stock_trade_list(check_trade_date)
+
+        trade_data_list = []
+        for item in data:
+            trade_data_list.append(item['trade_date'])
+        back_trade_date = datetime.datetime.strptime(trade_date, '%Y%m%d')
         list_trade_date = (back_trade_date + datetime.timedelta(-90)).strftime("%Y%m%d")
-        day_5_before_trade_date = (back_trade_date + datetime.timedelta(-7)).strftime("%Y%m%d")
-        day_10_before_trade_date = (back_trade_date + datetime.timedelta(-14)).strftime("%Y%m%d")
-        day_20_before_trade_date = (back_trade_date + datetime.timedelta(-28)).strftime("%Y%m%d")
+        # day_5_before_trade_date = (back_trade_date + datetime.timedelta(-7)).strftime("%Y%m%d")
+        # day_10_before_trade_date = (back_trade_date + datetime.timedelta(-14)).strftime("%Y%m%d")
+        # day_20_before_trade_date = (back_trade_date + datetime.timedelta(-28)).strftime("%Y%m%d")
+        day_5_before_trade_date = trade_data_list[5]
+        day_10_before_trade_date = trade_data_list[10]
+        day_20_before_trade_date = trade_data_list[20]
         data = mydb.get_stock_change_aggr(trade_date, list_trade_date, day_5_before_trade_date,
                                           day_10_before_trade_date, day_20_before_trade_date)
         return render.daily_change_aggr_report(trade_date, data)

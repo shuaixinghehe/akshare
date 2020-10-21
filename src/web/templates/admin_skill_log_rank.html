@@ -1,0 +1,23 @@
+$def with(admin_skill_rank_data)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>rank</title>
+</head>
+<body>
+<table>
+    <tr>
+        <th>userId</th>
+        <th>答题数</th>
+        <th>正确个数</th>
+    </tr>
+    $for key in admin_skill_rank_data:
+    <tr>
+        <td>$key['user_id']</td>
+        <td>$key['cnt']</td>
+        <td>$key['score']</td>
+    </tr>
+</table>
+</body>
+</html>
