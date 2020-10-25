@@ -9,6 +9,7 @@ import web
 import string
 
 urls = (
+    '/index', 'Index',
     '/check(.*)', 'Check',
     '/daily_report_(.*)', 'DailyReport',
     '/daily_high_report_(.*)', 'DailyHighReport',
@@ -32,6 +33,14 @@ t_globals = {
     'session': session,
 }
 render = web.template.render('templates/', globals=t_globals)
+
+
+class Index:
+    def GET(self):
+        pass
+        today_date_time = datetime.datetime.now()
+        trade_date = (today_date_time + datetime.timedelta(0)).strftime("%Y%m%d")
+        return render.index(trade_date)
 
 
 class NextAdminSkillQuestion:
@@ -279,7 +288,7 @@ class DataCheckReport:
             table_name = item['table_name']
             print('table name', item['table_name'], item['detail'])
             sql = str(item['detail']).format(trade_date)
-            cnt_data = mydb.get_tushare_query(sql)
+            cnt_data = mydb.get_tushare_query(item['db_name'], sql)
             check_data_report_map[table_name] = {}
             for cnt_item in cnt_data:
                 if cnt_item['trade_date'] not in trade_date_list and table_name == 'stock_daily':

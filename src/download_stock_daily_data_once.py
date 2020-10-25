@@ -34,7 +34,7 @@ def ts_code_2_ak_code(ts_code):
     return market_prefix.lower() + code
 
 
-@time_out(20, timeout_callback)
+@time_out(5, timeout_callback)
 def stock_zh_a_daily_timeout(symbol, adjust):
     if int(time.time()) % 2 ==0:
         return ak.stock_zh_kcb_daily(symbol=symbol, adjust=adjust)
@@ -48,13 +48,14 @@ def history_stock_daily(ts_code='', adjust="", trade_date=''):
     is_retry_times = 5
     stock_zh_a_daily_hfq_df = None
     start_time = time.time()
-    while is_retry_times > 0:
-        try:
-            stock_zh_a_daily_hfq_df = stock_zh_a_daily_timeout(symbol=ak_code, adjust=adjust)
-            is_retry_times = 0
-        except Exception as e:
-            print("error is_retry_times", is_retry_times, ts_code, adjust, trade_date)
-            is_retry_times -= 1
+    # while is_retry_times > 0:
+    try:
+        stock_zh_a_daily_hfq_df = stock_zh_a_daily_timeout(symbol=ak_code, adjust=adjust)
+        is_retry_times = 0
+    except Exception as e:
+        print("error is_retry_times", is_retry_times, ts_code, adjust, trade_date)
+        is_retry_times -= 1
+
     if stock_zh_a_daily_hfq_df is None:
         return True
     else:
@@ -200,7 +201,7 @@ def get_stock_code(trade_date):
 def dowload_stock_daily(start_date, hashmod, value):
     code_list = get_stock_code(start_date)
     sql = """
-           select ts_code ,count(1) cnt from akshare_daily where trade_date=%s  group by ts_code having cnt>=2;
+           select ts_code ,count(distinct adjust) cnt from akshare_daily where trade_date=%s  group by ts_code having cnt>=2;
        """
 
     ak_cur.execute(sql, (start_date))

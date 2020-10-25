@@ -40,8 +40,11 @@ def get_stock_detail(ts_code, trade_date):
     return db_tushare.select('stock_daily', where='ts_code=$ts_code and trade_date=$trade_date', vars=locals())
 
 
-def get_tushare_query(sql=""):
-    return db_tushare.query(sql)
+def get_tushare_query(db_name="", sql=""):
+    if db_name == "tushare":
+        return db_tushare.query(sql)
+    else:
+        return db_akshare.query(sql)
 
 
 def get_stock_daily(trade_date):
