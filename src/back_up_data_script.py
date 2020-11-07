@@ -280,49 +280,20 @@ def dowload_stock_daily(input_start_date):
 
 def check_akshare_stock_daily(back_check_trade_date='20200620'):
     pass
-    # 查找akshare daily 缺失个数,检查每天复权前后的stock 是否一致
+    # show tables name 进行backup
+    print('show tables to backuyp;')
     sql = """
-       select trade_date,adjust,count(distinct ts_code)  ts_code_cnt
-       from akshare.akshare_daily
-       where trade_date>=%s
-       group by trade_date,adjust; 
+         show tables;
     """
-    ak_cur.execute(sql, (back_check_trade_date))
+    ak_cur.execute(sql, ())
     result = ak_cur.fetchall()
-    download_stock_item_map = {}
-    download_stock_trade_date_map = {}
-    tushare_sql = """
-        select trade_date,count(distinct ts_code ) cnt
-        from tushare.stock_daily
-        where trade_date>=%s 
-        group by trade_date
-    """
-
     for item in result:
-        print('item', item)
-        download_stock_item_map[item[0] + "_" + item[1]] = item[2]
-        download_stock_trade_date_map[item[0]] = 1
-
-    ts_cur.execute(tushare_sql, (back_check_trade_date))
-    result = ts_cur.fetchall()
-    tushare_trade_date_map = {}
-    for item in result:
-        print('item', item)
-        tushare_trade_date_map[item[0]] = item[1]
-
-    for key in download_stock_item_map.keys():
-        print("key", key, "value", download_stock_item_map[key])
-
-    for trade_date in download_stock_trade_date_map.keys():
-        if download_stock_item_map[trade_date + "_" + "hfq"] == download_stock_item_map[trade_date + "_" + "qfq"] and \
-                download_stock_item_map[trade_date + "_" + "hfq"] == tushare_trade_date_map[trade_date]:
-            pass
-        else:
-            print("not match need redownload", trade_date, 'tushare download', tushare_trade_date_map[trade_date],
-                  'akshare download', download_stock_item_map[trade_date + "_" + "hfq"],
-                  download_stock_item_map[trade_date + "_" + "qfq"])
-            dowload_stock_daily(trade_date)
-
+        backup_script = "mysqldump -u root -p0WD6S7!f5tuvBt5fXbkU akshare "
+        backup_script += item[0]+ " > /Volumes/My Passport/data/stock/"+item[0]+".backup\n"
+        print(item[0])
+        ofile = open('/tmp/backup_akshare_db.sh','a+')
+        ofile.write(backup_script)
+        ofile.close()
 
 if __name__ == '__main__':
     print("股市有风险，入市需谨慎")

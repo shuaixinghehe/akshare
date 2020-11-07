@@ -3,7 +3,7 @@ v_time=`date "+%Y_%m_%d"`
 cd /Users/beacher/Workspace/custom_virtual_env_space
 source ./akshare_env/bin/activate
 cd /Users/beacher/Workspace/akshare/src
-for((i=1;i<75;i++))
+for((i=1;i<7;i++))
 do
     run_date=`date -v -"$i"d +%Y%m%d`
     log_date=`date -v -"$i"d +%Y_%m_%d`
