@@ -5,6 +5,7 @@ import time
 
 import akshare as ak
 import pymysql.cursors
+from multiprocessing import Process
 from akutils import time_out, timeout_callback
 
 ts_conn = pymysql.connect(host="127.0.0.1", user="tushare", \
@@ -237,7 +238,7 @@ def get_stock_code(trade_date):
             select
                 distinct ts_code
             from stock_daily
-            where trade_date >=%s ;
+            where trade_date =%s ;
         """
     ts_cur.execute(sql, (trade_date))
     result = ts_cur.fetchall()
@@ -293,7 +294,11 @@ if __name__ == '__main__':
     # value = 0
     # start_date = '20200729'
     print("start_date", start_date, "mod:", hashmod, " value", value)
-    # check_realtime_action_data()
     download_realtime_stock_action(start_date, hashmod, value)
+    # check_realtime_action_data()
+    # for i in range(0, hashmod):
+    #    p1 = Process(target=download_realtime_stock_action, args=(start_date, hashmod, value))  # 必须加,号
+    #    # download_realtime_stock_action(start_date, hashmod, value)
+    #    p1.start()
     print("Total cost ", time.time() - start_time)
     # is_download_realtime_stock_action(trade_date='20200703', ts_code='300843.SZ')
