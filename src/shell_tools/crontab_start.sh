@@ -4,7 +4,7 @@ v_time=`date "+%Y_%m_%d"`
 run_date=`date "+%Y%m%d"`
 cd /Users/beacher/Workspace/custom_virtual_env_space
 source ./akshare_env/bin/activate
-cd /Users/beacher/Workspace/akshare/src
+cd /Users/beacher/Workspace/akshare/src/module
 mode_value=1
 for((i=0;i<$mode_value;i++))
 do
