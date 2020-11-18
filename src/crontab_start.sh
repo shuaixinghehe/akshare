@@ -5,7 +5,7 @@ run_date=`date "+%Y%m%d"`
 cd /Users/beacher/Workspace/custom_virtual_env_space
 source ./akshare_env/bin/activate
 cd /Users/beacher/Workspace/akshare/src
-mode_value=5
+mode_value=1
 for((i=0;i<$mode_value;i++))
 do
     python download_stock_daily_data_once.py $mode_value $i $run_date >> /tmp/download_stock_daily_data_once_mode_"$i"_$v_time.log &

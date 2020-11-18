@@ -46,16 +46,12 @@ def stock_zh_a_daily_timeout(symbol, adjust):
 def history_stock_daily(ts_code='', adjust="", trade_date=''):
     pass
     ak_code = ts_code_2_ak_code(ts_code)
-    is_retry_times = 5
     stock_zh_a_daily_hfq_df = None
     start_time = time.time()
-    # while is_retry_times > 0:
     try:
         stock_zh_a_daily_hfq_df = stock_zh_a_daily_timeout(symbol=ak_code, adjust=adjust)
-        is_retry_times = 0
     except Exception as e:
-        print("error is_retry_times", is_retry_times, ts_code, adjust, trade_date)
-        is_retry_times -= 1
+        print("exception ", ts_code, adjust, trade_date)
 
     if stock_zh_a_daily_hfq_df is None:
         return True
@@ -234,7 +230,7 @@ def dowload_stock_daily(start_date, hashmod, value):
         start_time = time.time()
         download_cnt += 1
         for adjust in adjust_list:
-            is_retry = history_stock_daily(ts_code, adjust, start_date)
+            history_stock_daily(ts_code, adjust, start_date)
         print("end dowload_stock_daily ts_code cost ", time.time() - start_time, ts_code, adjust, 'download cnt ',
               download_cnt)
         print("\n")

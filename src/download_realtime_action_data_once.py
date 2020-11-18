@@ -63,7 +63,7 @@ def history_stock_daily(ts_code='', adjust=""):
     return False
 
 
-@time_out(10, timeout_callback)
+@time_out(5, timeout_callback)
 def stock_zh_a_tick_tx_timeout(ak_code, trade_date):
     return ak.stock_zh_a_tick_tx(code=ak_code, trade_date=trade_date)
 
@@ -119,6 +119,13 @@ def realtime_stock_detail(ts_code, trade_date):
         # ))
     ak_cur.executemany(sql, insert_data_list)
     ak_conn.commit()
+    try:
+        insert_sql = """ insert into check_stock_realtime_action
+            (ts_code,trade_date,is_download) values (%s,%s,%s)  """
+        ak_cur.execute(insert_sql, (ts_code, trade_date, "1"))
+        ak_conn.commit()
+    except Exception as e:
+        print("error",e)
     print("insert ts_code ", ts_code, " total cost ", time.time() - start_time)
     return is_retry_times
 
@@ -172,9 +179,9 @@ def check_realtime_action_data():
 
 def is_download_realtime_stock_action(trade_date, ts_code):
     pass
+    origin_ts_code = ts_code
     ts_code = str(ts_code).replace('.', '')
     sql = "SHOW TABLES LIKE '%" + ts_code + "%';"
-    # print(sql)
     ak_cur.execute(sql)
     result = ak_cur.fetchall()
     if len(result) == 0:
@@ -187,11 +194,27 @@ def is_download_realtime_stock_action(trade_date, ts_code):
     if len(result) == 0:
         return False
     print("stock_realtime_action_" + ts_code, trade_date, "is downloaded")
+    try:
+        insert_sql = """ insert into check_stock_realtime_action
+        (ts_code,trade_date,is_download) values (%s,%s,%s)  """
+        ak_cur.execute(insert_sql, (origin_ts_code, trade_date, "1"))
+        ak_conn.commit()
+    except Exception as e:
+        print("error", e)
+    return True
+
+
+# 检查当天所有的股票realtime action 是否下载完成
+def is_all_realtime_stock_action_download(trade_date):
+    code_list = get_stock_code(trade_date)
+    for code in code_list:
+        if not is_download_realtime_stock_action(trade_date, code):
+            return False
     return True
 
 
 def download_realtime_stock_action(trade_date, hashmod, value):
-    code_list = get_stock_code(start_date)
+    code_list = get_stock_code(trade_date)
     trade_date_list = []
     trade_date_list.append(trade_date)
     download_num = 0
@@ -294,7 +317,11 @@ if __name__ == '__main__':
     # value = 0
     # start_date = '20200729'
     print("start_date", start_date, "mod:", hashmod, " value", value)
-    download_realtime_stock_action(start_date, hashmod, value)
+    round_times = 0
+    while (not is_all_realtime_stock_action_download(start_date)):
+        print("round ", round_times)
+        round_times += 1
+        download_realtime_stock_action(start_date, hashmod, value)
     # check_realtime_action_data()
     # for i in range(0, hashmod):
     #    p1 = Process(target=download_realtime_stock_action, args=(start_date, hashmod, value))  # 必须加,号
