@@ -256,6 +256,8 @@ if __name__ == '__main__':
     #    p1 = Process(target=dowload_stock_daily, args=(start_date, hashmod, value))  # 必须加,号
     #    # download_realtime_stock_action(start_date, hashmod, value)
     #    p1.start()
+    round =1
     while (check_download_all_stock(start_date)):
+        round +=1
         dowload_stock_daily(start_date, hashmod, value)
-        print("Total cost:", time.time() - start_time)
+        print("round:", round, " Total cost:", time.time() - start_time)
