@@ -1,0 +1,87 @@
+$def with(start_date,end_date,type,data)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>定制日报</title>
+</head>
+<body>
+<style type="text/css">
+    .demo {
+        font-size: 18px;
+    }
+
+    .super span {
+        vertical-align: text-top;
+        font-size: 4px;
+        color: red;
+    }
+</style>
+
+
+<h1>$start_date ----- $end_date --- $type</h1><br>
+<table>
+    <tr>
+        <th>
+            ts_code
+        </th>
+        <th>
+            name
+        </th>
+        <th>
+            增长率
+        </th>
+        <th>
+            市盈率
+        </th>
+        <th>
+            总股数（万股）
+        </th>
+        <th>
+           流通股（万股）
+        </th>
+        <th>
+            自由流通股（万股）
+        </th>
+        <th>
+            总市值 （万元）
+        </th>
+        <th>
+            流通市值（万元）
+        </th>
+    </tr>
+    $for item in data:
+    <tr>
+        <td>
+        $ t = item['ts_code'].split(".")[0]
+        <a href="http://stockpage.10jqka.com.cn/$t/">$item['ts_code']</a>
+        </td>
+        <td>
+        $item['name']
+        </td>
+        <td>
+        $item['rate']
+        </td>
+        <td>
+        $item['pe_ttm']
+        </td>
+        <td>
+        $item['total_share']
+        </td>
+                <td>
+        $item['float_share']
+        </td>
+        <td>
+        $item['free_share']
+        </td>
+        <td>
+        $item['total_mv']
+        </td>
+        <td>
+        $item['circ_mv']
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

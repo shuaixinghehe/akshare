@@ -36,6 +36,8 @@ def realtime_data():
     print(time_str)
     stock_zh_a_spot_df.to_csv('test_stock_zh_a_spot_df' + time_str, index=True, sep=' ', encoding='utf_8_sig')
 
+../test/interface_test.py
+
 
 if __name__ == '__main__':
     print("股市有风险，入市需谨慎")

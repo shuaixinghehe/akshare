@@ -22,7 +22,9 @@ urls = (
     '/daily_top_inst_report', 'DailyTopInstReport',
     '/data_check_report', 'DataCheckReport',
     '/data_js_echart_demo', 'DataJsEchartDemo',
-    '/data_echart_admin_skill', 'DataEchartAdminSkill'
+    '/data_echart_admin_skill', 'DataEchartAdminSkill',
+    '/stock_change_aggr', 'StockChangeAggr',
+
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'),
@@ -33,6 +35,16 @@ t_globals = {
     'session': session,
 }
 render = web.template.render('templates/', globals=t_globals)
+
+
+class StockChangeAggr:
+    def GET(self):
+        input_data = web.input()
+        start_date = input_data.start_date
+        end_date = input_data.end_date;
+        type = input_data.type
+        data = mydb.get_recent_stock_change_aggr(start_date=start_date, end_date=end_date, type=type)
+        return render.stock_change_aggr(start_date, end_date, type, data)
 
 
 class Index:
@@ -336,9 +348,6 @@ class DailyChangeAggrReport:
             trade_data_list.append(item['trade_date'])
         back_trade_date = datetime.datetime.strptime(trade_date, '%Y%m%d')
         list_trade_date = (back_trade_date + datetime.timedelta(-90)).strftime("%Y%m%d")
-        # day_5_before_trade_date = (back_trade_date + datetime.timedelta(-7)).strftime("%Y%m%d")
-        # day_10_before_trade_date = (back_trade_date + datetime.timedelta(-14)).strftime("%Y%m%d")
-        # day_20_before_trade_date = (back_trade_date + datetime.timedelta(-28)).strftime("%Y%m%d")
         day_5_before_trade_date = trade_data_list[5]
         day_10_before_trade_date = trade_data_list[10]
         day_20_before_trade_date = trade_data_list[20]

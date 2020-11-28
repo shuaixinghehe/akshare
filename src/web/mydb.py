@@ -224,6 +224,56 @@ order by 10_daily_rate desc
            day_20_before_trade_date))
 
 
+# 返回最近涨幅最大的股票情况
+# limit_days  最近多长时间
+# type 价格类型，
+def get_recent_stock_change_aggr(start_date, end_date, type='high'):
+    sql = """
+    select
+    T3.ts_code,
+    T3.name,
+	(cast(T3.{} as decimal(5,2))- cast(T4.{} as decimal(5,2)))/ cast(T4.{} as decimal(5,2)) rate,
+	pe_ttm,total_share,float_share,free_share,total_mv,circ_mv
+from
+(
+    select
+	    T1.ts_code,
+	    T1.{},
+	    T2.name,
+	    T5.pe_ttm,total_share,float_share,free_share,total_mv,circ_mv
+	from
+	(
+	        select *
+	        from stock_daily
+	        where trade_date='{}'
+
+	)T1
+	join
+	(
+	        select *
+	        from stock_basic
+	        where dt='{}' and market  not in ('科创板')
+
+	)T2 on (T1.ts_code=T2.ts_code)
+	join
+	(
+	        select ts_code,pe_ttm,total_share,float_share,free_share,total_mv,circ_mv
+	        from stock_daily_basic
+	        where trade_date='{}' 
+	)T5 on (T1.ts_code=T5.ts_code)
+)T3
+join
+(
+    select *
+	from stock_daily
+	where trade_date='{}'
+
+)T4 on (T3.ts_code=T4.ts_code)
+order by rate desc
+    """
+    return db_tushare.query(sql.format(type, type, type, type, end_date, end_date, end_date, start_date))
+
+
 def get_stock_daily_top_inst(trade_date, list_date):
     return db_tushare.query("""
     	select

@@ -7,10 +7,22 @@ $def with(trade_date)
 </head>
 <body>
 <li>
+    <a href="./daily_report_$trade_date">daily_report</a>
+    <ul>
+        <li>当天大盘变化整体分布</li>
+    </ul>
+</li>
+<li>
     <a href="./daily_industry_report?trade_date=$trade_date">daily_industry_report</a>
+    <ul>
+        <li>行业变化</li>
+    </ul>
 </li>
 <li>
     <a href="./data_check_report?trade_date=$trade_date">data_check_report</a>
+    <ul>
+        <li>下载数据检查</li>
+    </ul>
 </li>
 <li>
     <a href="./daily_top_inst_report?trade_date=$trade_date">daily_top_inst_report</a>

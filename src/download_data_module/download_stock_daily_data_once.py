@@ -7,6 +7,7 @@ import akshare as ak
 import pymysql.cursors
 from akutils import time_out, timeout_callback
 from multiprocessing import Process
+import socket
 
 ts_conn = pymysql.connect(host="127.0.0.1", user="tushare", \
                           password="&QwX0^4#Sm^&t%V6wBnZC%78", \
@@ -33,6 +34,16 @@ def ts_code_2_ak_code(ts_code):
     code = ts_code.split('.')[0]
     market_prefix = ts_code.split('.')[1]
     return market_prefix.lower() + code
+
+
+def get_host_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    finally:
+        s.close()
+    return ip
 
 
 @time_out(5, timeout_callback)
@@ -236,28 +247,38 @@ def dowload_stock_daily(start_date, hashmod, value):
         print("\n")
 
 
+def init():
+    # 判断主机名称 初始化db链接
+    if socket.gethostname() == 'VM_0_13_centos':
+        ak_conn = web.database(dbn='mysql',
+                               db='akshare',
+                               host='127.0.0.1',
+                               port=3309, user='tushare',
+                               password="&QwX0^4#Sm^&t%V6wBnZC%78")
+        ak_cur = ak_conn.cursor()
+
+        ts_conn = pymysql.connect(host="127.0.0.1",
+                                  port=3309,
+                                  user="tushare", \
+                                  password="&QwX0^4#Sm^&t%V6wBnZC%78", \
+                                  db="tushare", \
+                                  charset='utf8')
+        ts_cur = ts_conn.cursor()
+
+
 if __name__ == '__main__':
     start_time = time.time()
     print("股市有风险，入市需谨慎")
     print("目标翻一倍")
     print('参数个数为:', len(sys.argv), '个参数。')
     print('参数列表:', str(sys.argv))
-    # print(time.strftime("%Y%m%d", time.localtime()))
-    # today = datetime.datetime.now()
-    # start_date = (today + datetime.timedelta(-2)).strftime("%Y%m%d")
     hashmod = sys.argv[1]
     value = sys.argv[2]
     start_date = sys.argv[3]
-    # hashmod = 1
-    # value = 0
-    # start_date = '20200729'
     print("mod:", hashmod, " value", value, " start date", start_date)
-    # for i in range(0, int(hashmod)):
-    #    p1 = Process(target=dowload_stock_daily, args=(start_date, hashmod, value))  # 必须加,号
-    #    # download_realtime_stock_action(start_date, hashmod, value)
-    #    p1.start()
-    round =1
+    round = 1
+    init()
     while (check_download_all_stock(start_date)):
-        round +=1
+        round += 1
         dowload_stock_daily(start_date, hashmod, value)
         print("round:", round, " Total cost:", time.time() - start_time)
