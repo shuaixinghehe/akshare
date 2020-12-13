@@ -1,0 +1,43 @@
+$def with(data,trade_date)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>行业类型</title>
+</head>
+<body>
+        <table>
+           <tr>
+               <td>
+                   序号
+               </td>
+               <td>
+                   行业类型
+               </td>
+               <td>
+                   总市值
+               </td>
+               <td>
+                   流通总市值
+               </td>
+           </tr>
+            $ num = 1
+            $for item in data:
+            <tr>
+                <td>
+                    $num
+                    $ num = num+1
+                </td>
+                <td>
+                    <a href="./daily_industry_report?trade_date=$trade_date&&industry=$item['industry']">$item['industry']</a>
+                </td>
+                <td>
+                    $item['sum_total_mv']
+                </td>
+                <td>
+                    $item['sum_circ_mv']
+                </td>
+            </tr>
+        </table>
+</body>
+</html>

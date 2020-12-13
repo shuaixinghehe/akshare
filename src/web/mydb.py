@@ -132,6 +132,31 @@ def get_stock_code(trade_date):
     """.format(trade_date))
 
 
+def get_stock_industry_by_date(trade_date):
+    return db_tushare.query("""
+        select
+    T1.industry,
+    sum(T2.total_mv) sum_total_mv,
+    sum(T2.circ_mv) sum_circ_mv
+from
+(
+    select ts_code,industry
+    from stock_basic
+    where dt='{}'
+    group by ts_code,industry
+)T1
+join
+(
+    select ts_code,total_mv,circ_mv
+    from stock_daily_basic
+    where trade_date='{}'
+    group by ts_code,total_mv,circ_mv
+)T2 on (T1.ts_code=T2.ts_code)
+group by     T1.industry
+        order by sum_total_mv desc 
+        """.format(trade_date, trade_date))
+
+
 def get_stock_daily_basic(trade_date):
     return db_tushare.select('stock_daily_basic', where='trade_date=$trade_date', vars=locals())
 

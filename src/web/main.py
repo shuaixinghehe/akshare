@@ -51,8 +51,12 @@ class Index:
     def GET(self):
         pass
         today_date_time = datetime.datetime.now()
-        trade_date = (today_date_time + datetime.timedelta(0)).strftime("%Y%m%d")
-        return render.index(trade_date)
+        trade_date = (today_date_time + datetime.timedelta(-29)).strftime("%Y%m%d")
+        data = mydb.get_stock_trade_list(trade_date)
+        trade_date_list = []
+        for item in data:
+            trade_date_list.append(item['trade_date'])
+        return render.index(trade_date_list[0], trade_date_list[6])
 
 
 class NextAdminSkillQuestion:
@@ -164,27 +168,6 @@ class SubmitAdminSkillAnswer:
         for item in data:
             cnt = item['cnt']
 
-        #  获取下一个预测的stock信息
-        # 随机选取100个连续的交易日，展示98个交易日，然后预测99，100两个交易日的涨跌情况
-        # result_list,selected_ts_code = get_admin_skill_stocks()
-        # print("result_list", result_list)
-        # result_list = get_random_stock_daily(result_list)
-        # print("result json", json.dumps(result_list, ensure_ascii=False))
-        # start_trade_date=result_list[0][0]
-        # end_trade_date=result_list[len(result_list) - 2][0]
-        # predict_trade_date=result_list[len(result_list)-1][0]
-        # fact = result_list[len(result_list)-1][4] > result_list[len(result_list)-2][2] * 1.01
-        # params = {
-        #        "user_id":input_data.user_id,
-        #        "ts_code":selected_ts_code,
-        #        "start_trade_date":start_trade_date,
-        #        "end_trade_date": end_trade_date,
-        #        "predict_trade_date":predict_trade_date,
-        #        "fact":str(fact),
-        #        "process":"(1/50)"
-        # }
-        # print("params",params)
-        err_code = 1
         if cnt == 0:
             err_code = 1
         elif cnt <= 50:
@@ -429,11 +412,14 @@ class DailyReport:
 class DailyIndustryReport:
     def GET(self):
         input_data = web.input()
+        print(type(input_data))
         print('input data', input_data)
-        data = mydb.get_industry_report(input_data.trade_date, input_data.industry)
-        # for item in data:
-        #     print(item)
-        return render.daily_industry_report(input_data.trade_date, data)
+        if 'industry' in input_data:
+            data = mydb.get_industry_report(input_data.trade_date, input_data.industry)
+            return render.daily_industry_report(input_data.trade_date, data)
+        else:
+            data = mydb.get_stock_industry_by_date(input_data.trade_date)
+            return render.daily_industry_list(data, input_data.trade_date)
 
 
 class DailyHighReport:

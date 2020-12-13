@@ -26,6 +26,16 @@ ak_cur = ak_conn.cursor()
 # hfq: 返回后复权后的数据;
 # hfq-factor: 返回后复权因子; hfq-factor: 返回前复权因子
 adjust_list = ['hfq', 'qfq']
+import logging
+
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"  # 日志格式化输出
+DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"  # 日期格式
+fp = logging.FileHandler('/tmp/realtime_action_download.log', encoding='utf-8')
+fs = logging.StreamHandler()
+logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT,
+                    datefmt=DATE_FORMAT, handlers=[fp, fs])  # 调用
+logger = logging.getLogger(__name__)
+LOG = logging
 
 
 def ts_code_2_ak_code(ts_code):
@@ -125,8 +135,9 @@ def realtime_stock_detail(ts_code, trade_date):
         ak_cur.execute(insert_sql, (ts_code, trade_date, "1"))
         ak_conn.commit()
     except Exception as e:
-        print("error",e)
+        print("error", e)
     print("insert ts_code ", ts_code, " total cost ", time.time() - start_time)
+    LOG.info("insert ts_code " + ts_code + "total cost" + str(time.time() - start_time))
     return is_retry_times
 
 
@@ -194,6 +205,7 @@ def is_download_realtime_stock_action(trade_date, ts_code):
     if len(result) == 0:
         return False
     print("stock_realtime_action_" + ts_code, trade_date, "is downloaded")
+    LOG.info("stock_realtime_action_" + ts_code + trade_date + "is downloaded")
     try:
         insert_sql = """ insert into check_stock_realtime_action
         (ts_code,trade_date,is_download) values (%s,%s,%s)  """
@@ -230,8 +242,13 @@ def download_realtime_stock_action(trade_date, hashmod, value):
             print("process ", download_num * 1.0 / len(code_list), " ",
                   download_num, " download_realtime_stock_action ", code,
                   " hash(code)", hash(code), " mod", hashmod, " value", value)
+            LOG.info("process " + str(download_num * 1.0 / len(code_list)) + " " +
+                     str(download_num) + " download_realtime_stock_action " + code
+                     +
+                     " hash(code)" + str(hash(code)) + " mod" + str(hashmod) + " value" + str(value))
             if r is not None:
                 print("download ts_code ", code, " total cost:", str(time.time() - start_time))
+                LOG.info("download ts_code " + code + " total cost:" + str(time.time() - start_time))
         # print("download_realtime_stock_action " + code + " cost" + str(time.time() - start_time))
 
 
@@ -302,30 +319,21 @@ def dowload_stock_daily():
 
 
 if __name__ == '__main__':
-    print("股市有风险，入市需谨慎")
-    print("目标翻一倍")
-    print('参数个数为:', len(sys.argv), '个参数。')
-    print('参数列表:', str(sys.argv))
-    print(time.strftime("%Y%m%d", time.localtime()))
+    LOG.info("股市有风险，入市需谨慎")
+    LOG.info("目标翻一倍")
+    LOG.info('参数个数为: ' + str(len(sys.argv)) + ' 个参数。')
+    LOG.info('参数列表: ' + str(sys.argv))
+    LOG.info(time.strftime("%Y%m%d", time.localtime()))
     today = datetime.datetime.now()
     start_date = (today + datetime.timedelta(-18)).strftime("%Y%m%d")
     hashmod = sys.argv[1]
     value = sys.argv[2]
     start_date = sys.argv[3]
     start_time = time.time()
-    # hashmod = 1
-    # value = 0
-    # start_date = '20200729'
-    print("start_date", start_date, "mod:", hashmod, " value", value)
+    LOG.info("start_date:" + start_date + " mod: " + hashmod + " value " + value)
     round_times = 0
     while (not is_all_realtime_stock_action_download(start_date)):
         print("round ", round_times)
         round_times += 1
         download_realtime_stock_action(start_date, hashmod, value)
-    # check_realtime_action_data()
-    # for i in range(0, hashmod):
-    #    p1 = Process(target=download_realtime_stock_action, args=(start_date, hashmod, value))  # 必须加,号
-    #    # download_realtime_stock_action(start_date, hashmod, value)
-    #    p1.start()
-    print("Total cost ", time.time() - start_time)
-    # is_download_realtime_stock_action(trade_date='20200703', ts_code='300843.SZ')
+    LOG.info("finish Total cost " + str(time.time() - start_time))

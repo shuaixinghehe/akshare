@@ -1,4 +1,4 @@
-$def with(trade_date)
+$def with(trade_date,start_trade_date)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +10,12 @@ $def with(trade_date)
     <a href="./daily_report_$trade_date">daily_report</a>
     <ul>
         <li>当天大盘变化整体分布</li>
+    </ul>
+</li>
+<li>
+    <a href="./stock_change_aggr?start_date=$start_trade_date&&end_date=$trade_date&&type=close">stock_change_aggr</a>
+    <ul>
+        <li>最近增长较快的数据</li>
     </ul>
 </li>
 <li>
@@ -26,6 +32,12 @@ $def with(trade_date)
 </li>
 <li>
     <a href="./daily_top_inst_report?trade_date=$trade_date">daily_top_inst_report</a>
+    <ul>
+        <li>龙虎榜数据</li>
+    </ul>
 </li>
+
+<h1>当天情况</h1>
+
 </body>
 </html>

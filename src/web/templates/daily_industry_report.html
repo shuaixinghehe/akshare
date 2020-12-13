@@ -22,6 +22,9 @@ $def with(trade_date,data)
 <h1>日期：$trade_date</h1><br>
 <table>
     <tr>
+        <th>
+            序号
+        </th>
     <th>
         ts_code
     </th>
@@ -74,8 +77,13 @@ $def with(trade_date,data)
         流通市值（亿元）
     </th>
     </tr>
+    $ num = 1
     $for item in data:
     <tr>
+        <td>
+        $num
+        $ num = num +1
+        </td>
         <td>
         $ t = item['ts_code'].split(".")[0]
         <a href="http://stockpage.10jqka.com.cn/$t/">$item['ts_code']</a>
