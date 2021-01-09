@@ -22,6 +22,13 @@ ak_conn = pymysql.connect(host="127.0.0.1", user="tushare", \
 
 ak_cur = ak_conn.cursor()
 
+monitor_conn = pymysql.connect(host="127.0.0.1", user="diabetes", \
+                               password="4JUyjNPxDmrDSUHfQf", \
+                               db="monitor", \
+                               charset='utf8')
+
+monitor_cur = monitor_conn.cursor()
+
 
 # 自定义超时异常
 class TimeoutError(Exception):
@@ -79,18 +86,31 @@ def get_stock_code(trade_date, is_today=True):
     return code_list
 
 
-
 def ts_code_2_ak_code(ts_code):
     code = ts_code.split('.')[0]
     market_prefix = ts_code.split('.')[1]
     return market_prefix.lower() + code
 
+
 def get_realtime_action_download_code_by_date(trade_date):
     pass
-    sql  = """ 
+    sql = """ 
         select ts_code from check_stock_realtime_action where trade_date=%s
     """
-    ak_cur.execute(sql,())
+    ak_cur.execute(sql, ())
     result = ak_cur.fetchall()
     for item in result:
         pass
+
+
+def perf(namespace='', subtag='', extra='', value=1):
+    pass
+    monitor_cur.execute("""
+        insert into  akshare_run_log (namespace,subtag,extra,value) values 
+        (%s,%s,%s,%s)
+    """, (str(namespace), str(subtag), str(extra), str(value)))
+    monitor_conn.commit()
+
+
+if __name__ == '__main__':
+    pass

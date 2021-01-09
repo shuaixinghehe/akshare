@@ -6,7 +6,7 @@ import time
 import akshare as ak
 import pymysql.cursors
 from multiprocessing import Process
-from akutils import time_out, timeout_callback
+from akutils import time_out, timeout_callback, perf
 
 ts_conn = pymysql.connect(host="127.0.0.1", user="tushare", \
                           password="&QwX0^4#Sm^&t%V6wBnZC%78", \
@@ -70,6 +70,7 @@ def history_stock_daily(ts_code='', adjust=""):
             str(row['turnover']).encode('utf-8'),
         ))
         ak_conn.commit()
+    perf(namespace='akshare_daily', subtag='insert', extra=ts_code)
     return False
 
 
@@ -127,12 +128,14 @@ def realtime_stock_detail(ts_code, trade_date):
         #     str(row['成交额(元)']).encode('utf-8'),
         #     str(row['性质']).encode('utf-8'),
         # ))
+    perf(namespace='download_realtime_action', subtag='insert', value=len(insert_data_list))
     ak_cur.executemany(sql, insert_data_list)
     ak_conn.commit()
     try:
         insert_sql = """ insert into check_stock_realtime_action
             (ts_code,trade_date,is_download) values (%s,%s,%s)  """
         ak_cur.execute(insert_sql, (ts_code, trade_date, "1"))
+        perf(namespace='check_stock_realtime_action', subtag='insert')
         ak_conn.commit()
     except Exception as e:
         print("error", e)
@@ -204,7 +207,6 @@ def is_download_realtime_stock_action(trade_date, ts_code):
     result = ak_cur.fetchall()
     if len(result) == 0:
         return False
-    print("stock_realtime_action_" + ts_code, trade_date, "is downloaded")
     LOG.info("stock_realtime_action_" + ts_code + trade_date + "is downloaded")
     try:
         insert_sql = """ insert into check_stock_realtime_action
