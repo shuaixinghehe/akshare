@@ -4,6 +4,8 @@ $def with(trade_date,data)
 <head>
     <meta charset="UTF-8">
     <title>定制日报</title>
+    <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <style type="text/css">
@@ -20,7 +22,7 @@ $def with(trade_date,data)
 
 
 <h1>日期：$trade_date</h1><br>
-<table>
+<table class="table table-striped table-bordered table-hover table-condensed">
     <tr>
     <th>
         序号
