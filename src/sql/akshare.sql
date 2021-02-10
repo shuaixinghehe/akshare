@@ -15,7 +15,7 @@ create TABLE `akshare_daily` (
   `turnover` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
-
+ALTER  TABLE  `akshare_daily`  ADD  PRIMARY  KEY (  `ts_code`,`trade_date`  ) ;
 --- 实时数据
 create TABLE `stock_realtime_action` (
   `ts_code` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
@@ -26,15 +26,16 @@ create TABLE `stock_realtime_action` (
   `volumn` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `value` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `kind` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 
 --- 实时数据
 create TABLE `check_stock_realtime_action` (
-  `ts_code` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-  `trade_date` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `ts_code` varchar(100) COLLATE utf8mb4_bin NOT NULL,
+  `trade_date` varchar(100) COLLATE utf8mb4_bin NOT NULL,
   `is_download` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+   PRIMARY KEY (`ts_code`,`trade_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 
 --- 检查数据表
