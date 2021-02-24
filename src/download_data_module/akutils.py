@@ -23,7 +23,7 @@ ak_conn = pymysql.connect(host="127.0.0.1", user="tushare", \
 ak_cur = ak_conn.cursor()
 
 monitor_conn = pymysql.connect(host="127.0.0.1", user="diabetes", \
-                               password="4JUyjNPxDmrDSUHfQf", \
+                               password="&QwX0^4#Sm^&t%V6wBnZC%78", \
                                db="monitor", \
                                charset='utf8')
 

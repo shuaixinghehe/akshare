@@ -9,3 +9,6 @@ create table `akshare_run_log` (
 
 -- mysql 配置 grafana 参考网址：
 -- 需要一个time字段，其他字段会被解析成数字类型
+
+CREATE USER 'diabetes'@'127.0.0.1' IDENTIFIED BY '&QwX0^4#Sm^&t%V6wBnZC%78';
+GRANT all privileges ON monitor.* TO 'diabetes'@'127.0.0.1';
