@@ -1,0 +1,15 @@
+{
+  "sum_ab": "a+b",
+  "min_ab": "min(a,b)",
+  "avg_ab": "(a+b)/2.0",
+  "avg_abc": "(a+b+c)/3.0",
+  "minus_ab": "a-b",
+  "mul_ab": "a*b",
+  "div_ab": "a/b",
+  "sum_abc": "a+b+c",
+  "minus_abc": "a-b-c",
+  "mul_abc": "a*b*c",
+  "div_abc": "a/b/c",
+  "r1": "a+b*c",
+  "r2": "(a+b)*c"
+}

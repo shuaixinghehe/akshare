@@ -1,0 +1,3 @@
+n_estimators=60 
+max_depth=6
+模型准确率:0.789128

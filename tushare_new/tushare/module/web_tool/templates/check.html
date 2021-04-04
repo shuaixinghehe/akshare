@@ -1,0 +1,117 @@
+$def with(trade_history_detail_map,trade_history_key_list,buy_date_strategys_map)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>check</title>
+</head>
+<body>
+口径说明：每次平均买入10000元，然后计算10000/(买入价格) * （买出价格-买入价格）
+<table>
+    <tr>
+        <th>日期</th>
+        <th>股票代码</th>
+        <th>买入日开盘价</th>
+        <th>买入日最低价</th>
+        <th>买入日最高价</th>
+        <th>买入日收盘价</th>
+        <th>买出日开盘价</th>
+        <th>买出日最低价</th>
+        <th>买出日最高价</th>
+        <th>买出日收盘价</th>
+        <th>开盘买最高卖</th>
+        <th>开盘买开盘卖</th>
+        <th>随机买随机卖</th>
+    </tr>
+    $for key in trade_history_key_list:
+    <tr>
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('buy_date'):
+            <td>$trade_history_detail_map[key]['buy_date']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('ts_code'):
+            <td>$trade_history_detail_map[key]['ts_code']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('buy_open'):
+            <td>$trade_history_detail_map[key]['buy_open']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('buy_low'):
+            <td>$trade_history_detail_map[key]['buy_low']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('buy_high'):
+            <td>$trade_history_detail_map[key]['buy_high']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('buy_close'):
+            <td>$trade_history_detail_map[key]['buy_close']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('sell_open'):
+            <td>$trade_history_detail_map[key]['sell_open']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('sell_low'):
+            <td>$trade_history_detail_map[key]['sell_low']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('sell_high'):
+            <td>$trade_history_detail_map[key]['sell_high']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('sell_close'):
+            <td>$trade_history_detail_map[key]['sell_close']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('strategy1'):
+            <td>$trade_history_detail_map[key]['strategy1']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('strategy2'):
+            <td>$trade_history_detail_map[key]['strategy2']</td>
+        $else:
+            <td>空</td>
+
+        $if trade_history_detail_map.has_key(key) and trade_history_detail_map[key].has_key('strategy3'):
+            <td>$trade_history_detail_map[key]['strategy3']</td>
+        $else:
+            <td>空</td>
+    </tr>
+</table>
+<h1>每天收益合计</h1>
+<table>
+    <tr>
+        <th>日期</th>
+        <th>开盘买最高卖(合计)</th>
+        <th>开盘买开盘卖(合计)</th>
+        <th>随机买随机卖(合计)</th>
+        <th>开盘买最高卖(收益率)</th>
+        <th>开盘买开盘卖(收益率)</th>
+        <th>随机买随机卖(收益率)</th>
+    </tr>
+    $for key in buy_date_strategys_map.keys():
+    <tr>
+        <td>$key</td>
+        <td>$buy_date_strategys_map[key]['total_strategy1']</td>
+        <td>$buy_date_strategys_map[key]['total_strategy2']</td>
+        <td>$buy_date_strategys_map[key]['total_strategy3']</td>
+        <td>$buy_date_strategys_map[key]['total_strategy1_rate']</td>
+        <td>$buy_date_strategys_map[key]['total_strategy2_rate']</td>
+        <td>$buy_date_strategys_map[key]['total_strategy3_rate']</td>
+    </tr>
+</table>
+</body>
+</html>
