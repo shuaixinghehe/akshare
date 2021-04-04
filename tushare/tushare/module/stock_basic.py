@@ -6,10 +6,9 @@ import tushare as ts
 import pymysql.cursors
 import os, sys
 
-LOCAL_SYS_PATH = ['/Users/beacherlu/Workspace/akshare/tushare/tushare/module',
-                  '/Users/beacherlu/Workspace/akshare',
-                  '/Users/beacherlu/Workspace/akshare/tushare/tushare/module',
-                  '/Users/beacherlu/Workspace/akshare/tushare/tushare', ]
+LOCAL_SYS_PATH = [os.getcwd() + '/module',
+                  os.getcwd(),
+                  ]
 for p in LOCAL_SYS_PATH:
     sys.path.append(p)
 print("sys.path", sys.path)
